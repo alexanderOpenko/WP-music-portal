@@ -1,0 +1,6 @@
+/languages
+/uploads
+/upgrade
+/index.php
+**/node_modules
+**/build
