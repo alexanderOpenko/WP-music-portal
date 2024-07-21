@@ -36,6 +36,24 @@ function music_post_types() {
     ),
     'menu_icon' => 'dashicons-calendar'
   ));
+
+  register_post_type('artist', array(
+    // 'capability_type' => 'music tag',
+    // 'map_meta_cap' => 'true',
+    'show_in_rest' => true,
+    'supports' => array('title', 'editor', 'excerpt'),
+    'rewrite' => array('slug' => 'artists'),
+    'has_archive' => true,
+    'public' => true,
+    'labels' => array(
+      'name' => 'artists',
+      'add_new_item' => 'Add New artist',
+      'edit_item' => 'Edit artist',
+      'all_items' => 'All artists',
+      'singular_name' => 'artist'
+    ),
+    'menu_icon' => 'dashicons-calendar'
+  ));
 }
 
 add_action('init', 'music_post_types');

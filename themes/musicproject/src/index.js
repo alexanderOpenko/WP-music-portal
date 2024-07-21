@@ -31,6 +31,34 @@ jQuery(document).ready(function ($) {
         const messageField = form.find('.message-field');
         const data = new FormData(form[0]);
 
+        const tags = [];
+
+        for (const [key, value] of data.entries()) {
+            if (key.startsWith('tags')) {
+                tags.push(value);
+            }
+        }
+
+        data.delete('tags')
+        data.append('tags', tags)
+
+        const name = normalizeArtistName(data.get('band'))
+        data.set('band', name)
+
+        function normalizeArtistName(name) {
+            name = name.trim();
+            name = name.toLowerCase();
+
+            const symbolsToRemove = ['@', '$', '&', '#', '!', '*', '(', ')'];
+            symbolsToRemove.forEach(symbol => {
+                name = name.split(symbol).join('');
+            });
+
+            name = name.replace(/[^a-z0-9]/g, '');
+            
+            return name;
+        }
+
         try {
             const resp = await fetch(universityData.root_url + "/wp-json/music/v1/createSong", {
                 method: "POST",
@@ -151,7 +179,7 @@ jQuery(document).ready(function ($) {
             closeAfterSelect: true,
             loadThrottle: 300,
             load: async function (query, callback) {
-                if (query && !defaultOptions.some(el => el.value.startsWith(query))) {
+                if (query && !defaultOptions.some(el => el.text.startsWith(query))) {
                     try {
                         $('#spinner').show()
                         const resp = await fetch(universityData.root_url + `/wp-json/music/v1/searchTags?q=${query}`, {
@@ -195,14 +223,6 @@ jQuery(document).ready(function ($) {
                 }
             }
         })[0].selectize
-
-        $selector.siblings('.selectize-control').find('input').on('blur', function () {
-            $('.tags-select-wrapper').find('.message-field').removeClass('error-message').text('')
-
-            selectizeInstance.clearOptions();
-            selectizeInstance.addOption(defaultOptions);
-            selectizeInstance.refreshOptions(false);
-        });
     }
 });
 

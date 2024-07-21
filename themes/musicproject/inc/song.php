@@ -18,7 +18,7 @@ function createSong($data)
             'post_status' => 'publish',
             'post_content' => $data['content'],
             'meta_input' => [
-                'tags' => $data['tags'],
+                'tag' => explode(',', $data['tags']),
                 'song_link' => ['url' => $data['song_link']],
                 'band' => $data['band']
             ]
@@ -36,6 +36,19 @@ function createSong($data)
                 'title' => $post->post_title
             ];
         },$postQuery->posts);
+
+        // create band 
+
+        // $isExistBand = post_exists($data['band'], '', '', 'artist');
+
+        // if ($isExistBand == 0) {
+        //     wp_insert_post([
+        //         'post_type' => 'artist',
+        //         'post_status' => 'publish',
+        //         'post_title' => $data['band'],
+        //         ''
+        //     ])
+        // }
 
         return new WP_REST_Response(["post" =>  $post[0]], 200);
     } else {

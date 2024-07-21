@@ -17,7 +17,7 @@ $dafault_tags = [];
 
 while ($tags->have_posts()) {
     $tags->the_post();
-    array_push($dafault_tags, ['value' => get_the_title(), 'text' =>  get_the_title()]);
+    array_push($dafault_tags, ['value' => get_the_ID(), 'text' =>  get_the_title()]);
 }
 ?>
 
@@ -36,7 +36,7 @@ while ($tags->have_posts()) {
             <label for="content">
                 Description
             </label>
-            <textarea name="content" id="content" class="input h-[150px]" type="text"></textarea>
+            <textarea name="content" id="content" class="input h-[110px]" type="text"></textarea>
 
             <label for="band">
                 Band
@@ -80,9 +80,9 @@ while ($tags->have_posts()) {
     </div>
 
     <div>
-        <p>
-            Uploaded songs
-        </p>
+        <h2>
+            Uploaded Tracks
+        </h2>
 
         <div>
             <div class="favsongs-page-list">

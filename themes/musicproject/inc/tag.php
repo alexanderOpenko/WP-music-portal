@@ -9,9 +9,9 @@ function tagRoutes() {
 
 function createTag($data) {
     $title = sanitize_text_field($data['title']);
-    $existQuery = post_exists($title);
+    $isExistTag = post_exists($title, '', '', 'musictag');
 
-    if ($existQuery == 0) {
+    if ($isExistTag == 0) {
       $mediaId = media_handle_upload('image_tag', 0);
 
       return wp_insert_post([
