@@ -13,7 +13,7 @@ $userTags = new WP_Query([
     </p>
 </div>
 
-<div class="max-w-md margin-center p-[10px]">
+<div class="md-content-centered p-[10px]">
     <h3>
         Create Global Music Tag
     </h3>
@@ -22,7 +22,7 @@ $userTags = new WP_Query([
         <label for="title">
             Title
         </label>
-        <input name="title" class="input" type="text" id="title" />
+        <input name="title" required class="input" type="text" id="title" />
 
         <label for="content">
             Content

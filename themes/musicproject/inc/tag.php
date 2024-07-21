@@ -14,15 +14,15 @@ function createTag($data) {
     if ($existQuery == 0) {
       $mediaId = media_handle_upload('image_tag', 0);
 
-      return wp_insert_post(array(
+      return wp_insert_post([
         'post_type' => 'musictag',
         'post_status' => 'publish',
         'post_title' => $data['title'],
         'post_content' => $data['content'],
-        'meta_input' => array(
+        'meta_input' => [
           'tag_image' => $mediaId
-        )
-      ));
+        ]
+      ], true);
     } else {
       return new WP_REST_Response(["message" =>  "Content already exist"], 409);
     }

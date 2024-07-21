@@ -26,6 +26,10 @@ body {
     @apply max-w-4xl margin-center py-5 px-9
 }
 
+.md-content-centered {
+    @apply max-w-md margin-center
+}
+
 header .avatar {
     height: 32px;
     width: 32px;
@@ -71,4 +75,19 @@ button {
     top: 50%;
     transition: background-color .1s;
     width: 32px;
+}
+
+.spinner {
+    width: 16px;
+    height: 16px;
+    border: 2px solid rgba(0, 0, 0, 0.1);
+    border-radius: 50%;
+    border-top-color: #333;
+    animation: spin 1s ease-in-out infinite;
+}
+
+@keyframes spin {
+    to {
+        transform: rotate(360deg);
+    }
 }

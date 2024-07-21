@@ -1,5 +1,9 @@
 <?php
 require get_theme_file_path('/inc/tag.php');
+require get_theme_file_path('/inc/songs-pagination.php');
+require get_theme_file_path('/inc/search-tags.php');
+require get_theme_file_path('/inc/song.php');
+
 require_once( ABSPATH . 'wp-admin/includes/post.php' );
 require_once( ABSPATH . 'wp-admin/includes/image.php' );
 require_once( ABSPATH . 'wp-admin/includes/file.php' );
