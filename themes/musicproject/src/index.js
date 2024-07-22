@@ -54,7 +54,7 @@ jQuery(document).ready(function ($) {
                 name = name.split(symbol).join('');
             });
 
-            name = name.replace(/[^a-z0-9]/g, '');
+            name = name.replace(/[^a-z0-9\s]/g, '');
             
             return name;
         }
@@ -123,6 +123,7 @@ jQuery(document).ready(function ($) {
                 const tempElement = $('<div>').html(data);
                 const contentData = tempElement.find('#content-container').html();
                 $('#content-container').html(contentData);
+                history.pushState(null, '', url);
             }
         });
     }

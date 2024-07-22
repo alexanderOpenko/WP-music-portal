@@ -22,10 +22,14 @@
         <!-- Контент будет загружаться сюда -->
     <header class="bg-black p-5 flex justify-end">
     <div class="text-white">
-            <a class="ajax-link" href="<?php echo site_url('/tag/')?>"> Tags </a>
-            <a class="ajax-link" href="<?php echo site_url('/favorite-songs/')?>">Songs (upload songs (mark with tags), save songs)</a>
-            <a> artists (upload your artist (mark with tags), and explore artist to add to list)</a>
-            <a> albums (add or save from searching albums)</a>
+            <a class="ajax-link" href="<?php echo site_url('/tag/')?>"> Tags </a>|
+            <a class="ajax-link" href="<?php echo site_url('/favorite-songs/')?>">
+                Songs (upload songs (mark with tags), save songs)
+            </a>|
+            <a class="ajax-link" href="<?php echo site_url('/favorite-artists/')?>"> 
+                artists (upload your artist (mark with tags), and explore artist to add to list)
+            </a>|
+            <a> albums (add or save from searching albums)</a>|
         </div>
         <div class="flex items-center gap-2.5">
             <?php if (is_user_logged_in()) : ?>

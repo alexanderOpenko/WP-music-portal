@@ -4,7 +4,7 @@ $uploaded_songs = new WP_Query([
     'author' => get_current_user_id(),
     'post_type' => 'song',
     'post_status' => 'publish',
-    'posts_per_page' => 1,
+    'posts_per_page' => 15,
     'paged' => get_query_var('paged') ?: 1
 ]);
 
@@ -58,7 +58,7 @@ while ($tags->have_posts()) {
                 <select multiple name="tags" class="input !mb-0" type="text" id="new-song-tags" data-default-tags='<?php echo json_encode($dafault_tags) ?>'>
                     <?php while ($tags->have_posts()) :
                         $tags->the_post() ?>
-                        <option value="<?php the_title() ?>"><?php the_title() ?></option>
+                        <option value="<?php echo get_the_ID() ?>"><?php the_title() ?></option>
                     <?php endwhile;
                     wp_reset_postdata();?>
                 </select>

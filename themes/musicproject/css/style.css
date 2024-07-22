@@ -6,6 +6,10 @@ body {
     margin: 0;
 }
 
+img {
+    width: 100%
+}
+
 .input {
     @apply w-input-width max-w-full p-2 mb-[15px] border-slate-200 rounded border-2
 }

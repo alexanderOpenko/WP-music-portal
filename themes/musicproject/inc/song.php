@@ -11,7 +11,7 @@ function manageSong()
 function createSong($data)
 {
     if (is_user_logged_in()) {
-        $postId = wp_insert_post([
+        $SongPostId = wp_insert_post([
             'author' => get_current_user_id(),
             'post_type' => 'song',
             'post_title' => $data['title'],
@@ -26,9 +26,10 @@ function createSong($data)
 
         $postQuery = new WP_query([
             'post_type' => 'song',
-            'p' => $postId
+            'p' => $SongPostId
         ]);
 
+        //for rest api response
         $post = array_map(function($post) {
             return [
                 'song_link' => get_field('song_link', $post->ID)['url'],
@@ -38,17 +39,48 @@ function createSong($data)
         },$postQuery->posts);
 
         // create band 
+        $isExistBand = new WP_Query([
+            'author' => get_current_user_id(),
+            'title' => $data['band'],
+            'post_type' => 'artist',
+            'post_status' => 'publish',
+            'posts_per_page' => 1
+        ]); 
 
-        // $isExistBand = post_exists($data['band'], '', '', 'artist');
+        if ($isExistBand->found_posts == 0) {
+            $artistPostId = wp_insert_post([
+                'post_type' => 'artist',
+                'post_status' => 'publish',
+                'post_title' => $data['band'],
+                'meta_input' => [
+                    'tag' => explode(',', $data['tags'])
+                ]
+            ]);
 
-        // if ($isExistBand == 0) {
-        //     wp_insert_post([
-        //         'post_type' => 'artist',
-        //         'post_status' => 'publish',
-        //         'post_title' => $data['band'],
-        //         ''
-        //     ])
-        // }
+            add_value_to_field('songs', $SongPostId, $artistPostId);
+        } else {       
+            $artist_id = 0;
+
+            $query = new WP_Query([
+                'author' => get_current_user_id(),
+                'title' => $data['band'],
+                'post_type' => 'artist',
+                'post_status' => 'publish',
+                'posts_per_page' => 1
+            ]);
+        
+            if ($query->have_posts()) {
+                $query->the_post();
+                $post_id = get_the_ID();
+                wp_reset_postdata(); 
+                $artist_id = $post_id;
+            }
+
+            if ($data['tags']) {
+                add_value_to_field('tag', explode(',', $data['tags']), $artist_id);
+            }
+            add_value_to_field('songs', $SongPostId, $artist_id);
+        }
 
         return new WP_REST_Response(["post" =>  $post[0]], 200);
     } else {
