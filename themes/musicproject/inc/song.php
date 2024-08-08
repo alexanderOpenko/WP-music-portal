@@ -7,7 +7,6 @@ function manageSong()
         'callback' => 'createSong'
     ]);
 }
-
 function createSong($data)
 {
     if (is_user_logged_in()) {
@@ -39,49 +38,17 @@ function createSong($data)
         },$postQuery->posts);
 
         // create band 
-        $isExistBand = new WP_Query([
-            'author' => get_current_user_id(),
-            'title' => $data['band'],
-            'post_type' => 'artist',
-            'post_status' => 'publish',
-            'posts_per_page' => 1
-        ]); 
+        $isExistBand = checkArtistExisting($data['band']);
 
-        if ($isExistBand->found_posts == 0) {
-            $artistPostId = wp_insert_post([
-                'post_type' => 'artist',
-                'post_status' => 'publish',
-                'post_title' => $data['band'],
-                'meta_input' => [
-                    'tag' => explode(',', $data['tags'])
-                ]
-            ]);
+        $artist_id = 0;
 
-            add_value_to_field('songs', $SongPostId, $artistPostId);
+        if (!$isExistBand) {
+            $artist_id = create_artist($data)['artist_id'];
         } else {       
-            $artist_id = 0;
-
-            $query = new WP_Query([
-                'author' => get_current_user_id(),
-                'title' => $data['band'],
-                'post_type' => 'artist',
-                'post_status' => 'publish',
-                'posts_per_page' => 1
-            ]);
-        
-            if ($query->have_posts()) {
-                $query->the_post();
-                $post_id = get_the_ID();
-                wp_reset_postdata(); 
-                $artist_id = $post_id;
-            }
-
-            if ($data['tags']) {
-                add_value_to_field('tag', explode(',', $data['tags']), $artist_id);
-            }
-            add_value_to_field('songs', $SongPostId, $artist_id);
+            $artist_id = update_artist_tags($data)['artist_id'];
         }
 
+        add_value_to_field('songs', $SongPostId, $artist_id);
         return new WP_REST_Response(["post" =>  $post[0]], 200);
     } else {
         return new WP_REST_Response(["message" =>  "Only logged in users can create a song."], 402);

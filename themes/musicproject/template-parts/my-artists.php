@@ -13,12 +13,6 @@
         </div>
     </div>
 
-    <?php if ($args['artists_type'] == 'favorite') : ?>
-        <div>
-            create artist form
-        </div>
-    <?php endif ?>
-
     <div class="artists-list grid grid-cols-3 gap-4">
         <?php while($args['artists']->have_posts()) :
             $args['artists']->the_post(); ?>

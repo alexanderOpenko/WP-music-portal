@@ -5,11 +5,15 @@ jQuery(document).ready(function ($) {
 
     function eventsRegistration() {
         $(document).on('submit', '.tag-form', function (e) {
-            submitTagForm(e, $(this));  
+            submitTagForm(e, $(this));
         });
 
         $(document).on('submit', '.song-form', function (e) {
-            submitSongForm(e, $(this)); 
+            submitSongForm(e, $(this));
+        });
+
+        $(document).on('submit', '.artist-form', function (e) {
+            submitArtistForm(e, $(this));
         });
 
         $(document).on('click', 'a.ajax-link', function (e) {
@@ -25,7 +29,54 @@ jQuery(document).ready(function ($) {
         $.data(document, 'eventsHandlerAttached', true);
     }
 
+    function normalizeArtistName(name) {
+        name = name.trim();
+        name = name.toLowerCase();
+
+        const symbolsToRemove = ['@', '$', '&', '#', '!', '*', '(', ')'];
+        symbolsToRemove.forEach(symbol => {
+            name = name.split(symbol).join('');
+        });
+
+        name = name.replace(/[^a-z0-9\s]/g, '');
+
+        return name;
+    }
+
     //submit song
+    async function submitArtistForm(e, form) {
+        alert('hello')
+        e.preventDefault()
+        const messageField = form.find('.message-field');
+        const data = new FormData(form[0]);
+
+        const name = normalizeArtistName(data.get('band'))
+        data.set('band', name)
+
+        try {
+            const resp = await fetch(universityData.root_url + "/wp-json/music/v1/createArtist", {
+                method: "POST",
+                body: data,
+                headers: {
+                    "X-WP-Nonce": universityData.nonce,
+                }
+            });
+            const json = await resp.json();
+
+            if (!resp.ok) {
+                throw new Error(json.message);
+            } else {
+                messageField.text("Artist created");
+                messageField.removeClass("error-message").addClass("success-message");
+                const container = $(".artists-list")
+                container.prepend(artistNode(json.post))
+            }
+        } catch (error) {
+            messageField.text(error.message);
+            messageField.removeClass("success-message").addClass("error-message");
+        }
+    }
+
     async function submitSongForm(e, form) {
         e.preventDefault();
         const messageField = form.find('.message-field');
@@ -39,25 +90,11 @@ jQuery(document).ready(function ($) {
             }
         }
 
-        data.delete('tags')
-        data.append('tags', tags)
-
         const name = normalizeArtistName(data.get('band'))
         data.set('band', name)
 
-        function normalizeArtistName(name) {
-            name = name.trim();
-            name = name.toLowerCase();
-
-            const symbolsToRemove = ['@', '$', '&', '#', '!', '*', '(', ')'];
-            symbolsToRemove.forEach(symbol => {
-                name = name.split(symbol).join('');
-            });
-
-            name = name.replace(/[^a-z0-9\s]/g, '');
-            
-            return name;
-        }
+        data.delete('tags')
+        data.append('tags', tags)
 
         try {
             const resp = await fetch(universityData.root_url + "/wp-json/music/v1/createSong", {
@@ -171,6 +208,20 @@ jQuery(document).ready(function ($) {
                             <a href="${post.link}">${post.title}</a>
                         </h3>
                     </div>`
+    }
+
+    function artistNode(post) {
+        return `
+            <div class="artist-card flex  flex-col">
+                <div class="artist-card_image">
+                    <img src="${post.image_link}"/>
+                </div>
+
+                <div class="artist-card_info">
+                    ${post.title}
+                </div>
+            </div>
+        `
     }
 
     const $selector = $('#new-song-tags')
