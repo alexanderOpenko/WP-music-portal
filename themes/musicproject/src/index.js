@@ -166,8 +166,8 @@ jQuery(document).ready(function ($) {
     }
 
     async function handleUploadedSongs(target) {
-        alert('handleUploadedSongs')
-        const $pageData = parseInt(target.attr('data-page'));
+        const $maxPages = target.attr('data-max-pages')
+        const $pageData = parseInt(target.attr('data-page'))
         target.attr('data-page', $pageData + 1);
 
         try {
@@ -179,7 +179,6 @@ jQuery(document).ready(function ($) {
             });
 
             const json = await resp.json();
-            console.log(resp.ok);
 
             if (!resp.ok) {
                 console.log('here');
@@ -189,8 +188,11 @@ jQuery(document).ready(function ($) {
 
                 json.posts.forEach(post => {
                     container.append(songNode(post))
+                })
+
+                if ($pageData + 1 >= $maxPages) {
+                    target.hide()
                 }
-                )
             }
         } catch (error) {
             console.log(error, 'error');

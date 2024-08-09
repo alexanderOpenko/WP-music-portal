@@ -1,28 +1,35 @@
 <div class="content-container">
     <div class="myArtists-nav flex">
         <div>
-            <a href="<?php echo site_url('/favorite-artists/') ?>" class="<?php echo $args['artists_type'] == 'favorite' ? 'active-link' : ''?>">
+            <a href="<?php echo site_url('/favorite-artists/') ?>" class="<?php echo $args['artists_type'] == 'favorite' ? 'active-link' : '' ?>">
                 favorite artists
             </a>
         </div>
 
         <div>
-            <a href="<?php echo site_url('/saved-artists/') ?> class="<?php echo $args['artists_type'] == 'saved' ? 'active-link' : ''?>"">
+            <a href="<?php echo site_url('/saved-artists/') ?> class=" <?php echo $args['artists_type'] == 'saved' ? 'active-link' : '' ?>"">
                 saved artists
             </a>
         </div>
     </div>
 
     <div class="artists-list grid grid-cols-3 gap-4">
-        <?php while($args['artists']->have_posts()) :
-            $args['artists']->the_post(); ?>
-            <div class="artist-card flex  flex-col">
-                <div class="artist-card_image">
-                    <img src="<?php echo get_template_directory_uri() . '/images/artist-placeholder.jpg'?>"/>
+        <?php while ($args['artists']->have_posts()) :
+            $args['artists']->the_post();
+            $image_id = get_field('artist_image');
+$metadata = wp_get_attachment_metadata($image_id);
+print json_encode($metadata);
+        ?>
+            <div class="artist-card flex flex-col relative">
+                <a href="<?php the_permalink() ?>" class="full-absolute">
+                </a>
+                <div class="artist-card_image relative pt-[100%]">
+                    <img class="full-absolute" src="<?php echo get_field('artist_image') ?
+                                                        wp_get_attachment_image_url(get_field('artist_image'), 'thumb')
+                                                        : get_template_directory_uri() . '/images/artist-placeholder.jpg' ?>" />
                 </div>
-
                 <div class="artist-card_info">
-                    <?php the_title()?>
+                    <?php the_title() ?>
                 </div>
             </div>
         <?php endwhile ?>

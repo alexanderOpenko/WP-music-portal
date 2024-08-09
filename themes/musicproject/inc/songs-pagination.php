@@ -14,7 +14,7 @@ function getPage($data)
   $uploaded_songs = new WP_Query([
     'author' => get_current_user_id(),
     'post_type' => 'song',
-    'posts_per_page' => 1,
+    'posts_per_page' => 15,
     'paged' => $page
   ]);
 

@@ -68,11 +68,17 @@ function update_artist_tags($data)
 }
 
 function create_artist($data): array {
+    $is_image_uploaded = false;
+
     $meta_input = [
         'tag' => explode(',', $data['tags'])
     ];
 
-    if (isset($_FILES['artist_image'])) {
+    if (isset($_FILES['artist_image']) && $_FILES['artist_image']['size'] > 0) {
+        $is_image_uploaded = true;
+    }
+
+    if ($is_image_uploaded) {
         $mediaId = media_handle_upload('artist_image', 0);
         $meta_input['artist_image'] = $mediaId;
     }
@@ -90,12 +96,14 @@ function create_artist($data): array {
         'p' => $artist_id
     ]);
 
-    $artist = array_map(function($post) {
-        $image_id = get_post_meta($post->ID, 'artist_image', true);
-        $image_link = wp_get_attachment_url($image_id);
+    $artist = array_map(function($post) use ($is_image_uploaded) {
+        if ($is_image_uploaded) {
+            $image_id = get_post_meta($post->ID, 'artist_image', true);
+            $image_link = wp_get_attachment_url($image_id);
+        }
 
         return [
-            'image_link' => $image_link,
+            'image_link' => $is_image_uploaded ? $image_link : get_template_directory_uri() . '/images/artist-placeholder.jpg',
             'link' => get_permalink($post->ID),
             'title' => $post->post_title
         ];

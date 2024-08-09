@@ -10,6 +10,10 @@ img {
     width: 100%
 }
 
+.full-absolute {
+    @apply absolute inset-0 h-full;
+}
+
 .input {
     @apply w-input-width max-w-full p-2 mb-[15px] border-slate-200 rounded border-2
 }
