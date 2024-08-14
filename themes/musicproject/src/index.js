@@ -45,7 +45,6 @@ jQuery(document).ready(function ($) {
 
     //submit song
     async function submitArtistForm(e, form) {
-        alert('hello')
         e.preventDefault()
         const messageField = form.find('.message-field');
         const data = new FormData(form[0]);
@@ -285,34 +284,61 @@ jQuery(document).ready(function ($) {
     }
 });
 
-
-
 function onYouTubeIframeAPIReady() {
     jQuery(document).ready(function ($) {
         var player;
 
         $(document).on('click', '.song-play', function () {
-            console.log('hello');
-            if (player) {
-                player.stopVideo()
-                player.destroy()
-            }
-            const dataLink = $(this).data('song-link').replace(' ,', '')
+            $this = $(this)
 
+            const dataLink = $(this).data('song-link').replace(' ,', '')
             const urlObj = new URL(dataLink);
             var videoId = urlObj.searchParams.get("v");
 
-            player = new YT.Player('player', {
-                height: '390',
-                width: '640',
-                videoId: videoId, // Замените VIDEO_ID на ID вашего видео на YouTube
-                events: {
-                    'onReady': onPlayerReady
+            createPlayer(videoId);
+
+            function createPlayer(videoId) {
+                const allSongsOnPage = $('.song-item');
+                const index = allSongsOnPage.index($this.closest('.song-item'))
+
+                if (index + 1 === allSongsOnPage.length) {
+                    $('.upload-song-page-js').click()
                 }
-            });
+
+                if (player) {
+                    player.stopVideo()
+                    player.destroy()
+                }
+
+                player = new YT.Player('player', {
+                    height: '390',
+                    width: '640',
+                    videoId: videoId, // Замените VIDEO_ID на ID вашего видео на YouTube
+                    events: {
+                        'onReady': onPlayerReady,
+                        'onStateChange': onPlayerStateChange
+                    }
+                });
+            }
 
             function onPlayerReady(event) {
                 player.playVideo();
+            }
+
+            function onPlayerStateChange(event) {
+                if (event.data === 0) {
+                    const nextSongItem = $this.closest('.song-item').next('.song-item');
+                    $this = nextSongItem
+
+                    if (!nextSongItem.length) {
+                        return
+                    }
+
+                    const nextSongLink = new URL(nextSongItem.find('.song-play').attr('data-song-link'));
+                    var videoId = nextSongLink.searchParams.get("v");
+
+                    createPlayer(videoId);
+                }
             }
         });
     })
