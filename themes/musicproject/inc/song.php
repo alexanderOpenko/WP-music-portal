@@ -10,6 +10,17 @@ function manageSong()
 function createSong($data)
 {
     if (is_user_logged_in()) {
+        // create band 
+        $isExistBand = checkArtistExisting($data['band']);
+
+        $artist_id = 0;
+
+        if (!$isExistBand) {
+            $artist_id = create_artist($data)['artist_id'];
+        } else {       
+            $artist_id = update_artist_tags($data)['artist_id'];
+        }
+
         $SongPostId = wp_insert_post([
             'author' => get_current_user_id(),
             'post_type' => 'song',
@@ -17,6 +28,7 @@ function createSong($data)
             'post_status' => 'publish',
             'post_content' => $data['content'],
             'meta_input' => [
+                'artist' => $artist_id,
                 'tag' => explode(',', $data['tags']),
                 'song_link' => ['url' => $data['song_link']],
                 'band' => $data['band']
@@ -36,17 +48,6 @@ function createSong($data)
                 'title' => $post->post_title
             ];
         },$postQuery->posts);
-
-        // create band 
-        $isExistBand = checkArtistExisting($data['band']);
-
-        $artist_id = 0;
-
-        if (!$isExistBand) {
-            $artist_id = create_artist($data)['artist_id'];
-        } else {       
-            $artist_id = update_artist_tags($data)['artist_id'];
-        }
 
         add_value_to_field('songs', $SongPostId, $artist_id);
         return new WP_REST_Response(["post" =>  $post[0]], 200);

@@ -27,14 +27,15 @@ function add_value_to_field(string $field_key, mixed $value, int $post_id): void
     update_post_meta($post_id, $field_key, $field);
 }
 
-function checkArtistExisting(string $band): bool {
+function checkArtistExisting(string $band): bool
+{
     $query = new WP_Query([
         'author' => get_current_user_id(),
         'title' => $band,
         'post_type' => 'artist',
         'post_status' => 'publish',
         'posts_per_page' => 1
-    ]); 
+    ]);
 
     return $query->found_posts == 0 ? false : true;
 }
@@ -67,11 +68,23 @@ function update_artist_tags($data)
     ];
 }
 
-function create_artist($data): array {
+function get_post_image_custom(int|string $image_data = null, $custom_size = 'thumbnail'): string
+{
+    if ($image_data != 0) {
+    $image_url = is_numeric($image_data) ?
+        wp_get_attachment_image_url($image_data, $custom_size) :
+        $image_data;
+    }
+
+    return $image_url ??= get_template_directory_uri() . '/images/artist-placeholder.jpg';
+}
+
+function create_artist($data): array
+{
     $is_image_uploaded = false;
 
     $meta_input = [
-        'tag' => explode(',', $data['tags'])
+        'tag' => $data['tags'] ? explode(',', $data['tags']) : []
     ];
 
     if (isset($_FILES['artist_image']) && $_FILES['artist_image']['size'] > 0) {
@@ -96,10 +109,10 @@ function create_artist($data): array {
         'p' => $artist_id
     ]);
 
-    $artist = array_map(function($post) use ($is_image_uploaded) {
+    $artist = array_map(function ($post) use ($is_image_uploaded) {
         if ($is_image_uploaded) {
             $image_id = get_post_meta($post->ID, 'artist_image', true);
-            $image_link = wp_get_attachment_url($image_id);
+            $image_link = get_post_image_custom($image_id, 'thumb');
         }
 
         return [

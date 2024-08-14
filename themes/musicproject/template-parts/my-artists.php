@@ -17,16 +17,15 @@
         <?php while ($args['artists']->have_posts()) :
             $args['artists']->the_post();
             $image_id = get_field('artist_image');
-$metadata = wp_get_attachment_metadata($image_id);
-print json_encode($metadata);
+            // $metadata = wp_get_attachment_metadata($image_id);
+            // print json_encode($metadata);
+            $image_url = get_post_image_custom(get_field('artist_image'), 'thumb');
         ?>
             <div class="artist-card flex flex-col relative">
-                <a href="<?php the_permalink() ?>" class="full-absolute">
+                <a href="<?php the_permalink() ?>" class="full-absolute z-10 ajax-link">
                 </a>
                 <div class="artist-card_image relative pt-[100%]">
-                    <img class="full-absolute" src="<?php echo get_field('artist_image') ?
-                                                        wp_get_attachment_image_url(get_field('artist_image'), 'thumb')
-                                                        : get_template_directory_uri() . '/images/artist-placeholder.jpg' ?>" />
+                    <img class="full-absolute object-cover" src="<?php echo $image_url ?>" />
                 </div>
                 <div class="artist-card_info">
                     <?php the_title() ?>

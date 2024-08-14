@@ -93,9 +93,11 @@ while ($tags->have_posts()) {
                 ?>
             </div>
 
-            <div class="upload-song-page-js cursor-pointer" data-page=2 data-max-pages="<?php echo $uploaded_songs->max_num_pages ?>">
-                view more
-            </div>
+            <?php if ($uploaded_songs->found_posts > 10): ?>
+                <div class="upload-song-page-js cursor-pointer" data-page=2 data-max-pages="<?php echo $uploaded_songs->max_num_pages ?>">
+                    view more
+                </div>
+            <?php endif ?>
         </div>
     </div>
 </div>

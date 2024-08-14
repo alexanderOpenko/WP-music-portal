@@ -168,10 +168,15 @@ jQuery(document).ready(function ($) {
     async function handleUploadedSongs(target) {
         const $maxPages = target.attr('data-max-pages')
         const $pageData = parseInt(target.attr('data-page'))
+        const $artist = target.attr('data-artist') ? parseInt(target.attr('data-artist')) : false
+
         target.attr('data-page', $pageData + 1);
 
+        let url = universityData.root_url + `/wp-json/music/v1/songsPaginations?page=${$pageData}`
+        url = $artist ? url + `?artist=${$artist}` : url
+
         try {
-            const resp = await fetch(universityData.root_url + `/wp-json/music/v1/songsPaginations?page=${$pageData}`, {
+            const resp = await fetch(url, {
                 method: "GET",
                 headers: {
                     "X-WP-Nonce": universityData.nonce,
@@ -214,9 +219,9 @@ jQuery(document).ready(function ($) {
 
     function artistNode(post) {
         return `
-            <div class="artist-card flex  flex-col">
-                <div class="artist-card_image">
-                    <img src="${post.image_link}"/>
+            <div class="artist-card flex flex-col">
+                <div class="artist-card_image relative pt-[100%]">
+                    <img class="full-absolute object-cover" src="${post.image_link}"/>
                 </div>
 
                 <div class="artist-card_info">

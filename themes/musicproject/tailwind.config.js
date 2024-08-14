@@ -5,7 +5,10 @@ module.exports = {
     extend: {
       width: {
         'input-width': 'calc(100% - 18px)',
-      }
+      },
+      colors: {
+        'mywhite': 'hsl(0deg 0% 100% / 85%)',
+      },
     },
   },
   plugins: [],

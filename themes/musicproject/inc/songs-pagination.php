@@ -2,21 +2,29 @@
 
 function songsPagination()
 {
-  register_rest_route('music/v1', 'songsPaginations', array(
+  register_rest_route('music/v1', 'songsPaginations', [
     'methods' => 'GET',
     'callback' => 'getPage'
-  ));
+  ]);
 }
 function getPage($data)
 {
   $page = sanitize_text_field($data['page']);
 
-  $uploaded_songs = new WP_Query([
-    'author' => get_current_user_id(),
+  $params = [
     'post_type' => 'song',
     'posts_per_page' => 15,
-    'paged' => $page
-  ]);
+    'paged' => $page,
+    'meta_query' => []
+  ]; 
+
+  if ($data['artist']) {
+    $params['meta_query']['artist'] = $data['artist'];
+  } else {
+    $params['author'] = get_current_user_id();
+  }
+
+  $uploaded_songs = new WP_Query($params);
 
   $posts = array_map(function ($post) {
     return [
