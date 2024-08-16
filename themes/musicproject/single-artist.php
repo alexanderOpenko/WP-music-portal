@@ -12,7 +12,7 @@ while (have_posts()) :
                 <?php the_title(); ?>
             </h1>
 
-            <button class="uppercase primary-button py-[9px] px-[20px] flex items-center">
+            <button class="uppercase play-first-artist-song-js primary-button py-[9px] px-[20px] flex items-center">
                 <div class="chartlist-play-button mr-[4px]">
                 </div>
 

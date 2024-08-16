@@ -10,7 +10,7 @@ $uploaded_songs = new WP_Query([
 
 $tags = new WP_Query([
     'post_type' => 'musictag',
-    'posts_per_page' => 2,
+    'posts_per_page' => 10,
 ]);
 
 $dafault_tags = [];

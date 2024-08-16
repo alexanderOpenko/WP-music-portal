@@ -24,9 +24,16 @@ jQuery(document).ready(function ($) {
             handleUploadedSongs($(this))
         })
 
+        $(document).on('click', '.play-first-artist-song-js', function (e) {
+            playFirstArtistSong($(this))
+        })
         // initSelectizeTags()
 
         $.data(document, 'eventsHandlerAttached', true);
+    }
+
+    function playFirstArtistSong() {
+        $('.song-play').first().click()
     }
 
     function normalizeArtistName(name) {
@@ -236,11 +243,14 @@ jQuery(document).ready(function ($) {
         const selectizeInstance = $selector.selectize({
             closeAfterSelect: true,
             loadThrottle: 300,
+            respect_word_boundaries: false,
             load: async function (query, callback) {
-                if (query && !defaultOptions.some(el => el.text.startsWith(query))) {
+                console.log(query, 'query');
+                
+                if (query && !defaultOptions.some(el => el.text.toLowerCase().startsWith(query.toLowerCase())) && query.trim() !== '') {
                     try {
                         $('#spinner').show()
-                        const resp = await fetch(universityData.root_url + `/wp-json/music/v1/searchTags?q=${query}`, {
+                        const resp = await fetch(universityData.root_url + `/wp-json/music/v1/searchTags?q=${encodeURIComponent(query)}`, {
                             method: "GET",
                             headers: {
                                 "X-WP-Nonce": universityData.nonce
@@ -267,16 +277,17 @@ jQuery(document).ready(function ($) {
                     } finally {
                         $('#spinner').hide();
                     }
+                } else {
+                    $('.tags-select-wrapper').find('.message-field').removeClass('error-message').text('')
                 }
 
                 return callback()
             },
             onType: function (value) {
                 if (!value) {
-                    $('.tags-select-wrapper').find('.message-field').removeClass('error-message').text('')
-
-                    this.clearOptions();
                     this.addOption(defaultOptions);
+                    $('.tags-select-wrapper').find('.message-field').removeClass('error-message').text('')
+                    alert(2)
                     this.refreshOptions(false);
                 }
             }
@@ -290,6 +301,16 @@ function onYouTubeIframeAPIReady() {
 
         $(document).on('click', '.song-play', function () {
             $this = $(this)
+            $('.close-icon').show()
+
+            $(document).on('click', '.close-icon', function () { 
+                player.stopVideo()
+                player.destroy()
+                player = false
+                console.log(player,'videoId');
+
+                $(this).hide()
+            })
 
             const dataLink = $(this).data('song-link').replace(' ,', '')
             const urlObj = new URL(dataLink);
@@ -298,6 +319,8 @@ function onYouTubeIframeAPIReady() {
             createPlayer(videoId);
 
             function createPlayer(videoId) {
+                console.log(videoId,'videoId');
+                
                 const allSongsOnPage = $('.song-item');
                 const index = allSongsOnPage.index($this.closest('.song-item'))
 
@@ -305,28 +328,27 @@ function onYouTubeIframeAPIReady() {
                     $('.upload-song-page-js').click()
                 }
 
-                if (player) {
-                    player.stopVideo()
-                    player.destroy()
-                }
+                if (!player) {
+                    player = new YT.Player('player', {
+                        videoId: videoId,
+                        events: {
+                            'onReady': onPlayerReady,
+                            'onStateChange': onPlayerStateChange
+                        }
+                    });
+                } else {
+                    console.log(player,'videoId');
 
-                player = new YT.Player('player', {
-                    height: '390',
-                    width: '640',
-                    videoId: videoId, // Замените VIDEO_ID на ID вашего видео на YouTube
-                    events: {
-                        'onReady': onPlayerReady,
-                        'onStateChange': onPlayerStateChange
-                    }
-                });
+                    player.loadVideoById(videoId)
+                }
             }
 
             function onPlayerReady(event) {
-                player.playVideo();
+                event.target.playVideo();
             }
 
             function onPlayerStateChange(event) {
-                if (event.data === 0) {
+                if (event.data === YT.PlayerState.ENDED) {
                     const nextSongItem = $this.closest('.song-item').next('.song-item');
                     $this = nextSongItem
 
@@ -336,8 +358,7 @@ function onYouTubeIframeAPIReady() {
 
                     const nextSongLink = new URL(nextSongItem.find('.song-play').attr('data-song-link'));
                     var videoId = nextSongLink.searchParams.get("v");
-
-                    createPlayer(videoId);
+                    player.loadVideoById(videoId)
                 }
             }
         });
