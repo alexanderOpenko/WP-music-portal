@@ -20,6 +20,8 @@ function getPage($data)
 
   if ($data['artist']) {
     $params['meta_query']['artist'] = $data['artist'];
+  } else if ($data['tag']) {
+    $params['meta_query']['tag'] = $data['tag'];
   } else {
     $params['author'] = get_current_user_id();
   }

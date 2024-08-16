@@ -9,20 +9,48 @@ function tagRoutes() {
 
 function createTag($data) {
     $title = sanitize_text_field($data['title']);
-    $isExistTag = post_exists($title, '', '', 'musictag');
+    $isExistTag = post_exists($title, '', '', 'musictag', 'publish');
 
     if ($isExistTag == 0) {
-      $mediaId = media_handle_upload('image_tag', 0);
+      $is_image_uploaded = false;
+      $meta_input = [];
 
-      return wp_insert_post([
+      if (isset($_FILES['image_tag']) && $_FILES['image_tag']['size'] > 0) {
+        $is_image_uploaded = true;
+      }
+
+      if ($is_image_uploaded) {
+          $mediaId = media_handle_upload('image_tag', 0);
+          $meta_input['tag_image'] = $mediaId;
+      }
+
+
+      $tag_id = wp_insert_post([
         'post_type' => 'musictag',
         'post_status' => 'publish',
         'post_title' => $data['title'],
         'post_content' => $data['content'],
-        'meta_input' => [
-          'tag_image' => $mediaId
-        ]
+        'meta_input' => $meta_input
       ], true);
+
+      $postQuery = new WP_query([
+        'post_type' => 'musictag',
+        'p' => $tag_id
+    ]);
+
+    $tag = array_map(function ($post) use ($is_image_uploaded) {
+        if ($is_image_uploaded) {
+            $image_id = get_post_meta($post->ID, 'tag_image', true);
+            $image_link = get_post_image_custom($image_id, 'thumb');
+        }
+
+        return [
+            'image_link' => $is_image_uploaded ? $image_link : get_template_directory_uri() . '/images/artist-placeholder.jpg',
+            'link' => get_permalink($post->ID),
+            'title' => $post->post_title
+        ];
+    }, $postQuery->posts);
+      return new WP_REST_Response(["post" =>  $tag], 200);
     } else {
       return new WP_REST_Response(["message" =>  "Content already exist"], 409);
     }

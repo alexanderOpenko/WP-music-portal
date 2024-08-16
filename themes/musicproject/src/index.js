@@ -140,9 +140,9 @@ jQuery(document).ready(function ($) {
                     "X-WP-Nonce": universityData.nonce,
                 }
             });
+            const json = await resp.json();
 
-            if (!resp.ok) {
-                const json = await resp.json();
+            if (!resp.ok) {                
                 throw new Error(json.message);
             } else {
                 messageField.text("tag created");
@@ -175,12 +175,18 @@ jQuery(document).ready(function ($) {
         const $maxPages = target.attr('data-max-pages')
         const $pageData = parseInt(target.attr('data-page'))
         const $artist = target.attr('data-artist') ? parseInt(target.attr('data-artist')) : false
+        const $tag = target.attr('data-tag') ? parseInt(target.attr('data-tag')) : false
 
         target.attr('data-page', $pageData + 1);
 
         let url = universityData.root_url + `/wp-json/music/v1/songsPaginations?page=${$pageData}`
-        url = $artist ? url + `?artist=${$artist}` : url
 
+        if ($artist) {
+            url += `?artist=${$artist}`
+        } else if ($tag) {
+            url += `?tag=${$tag}`
+        } 
+        
         try {
             const resp = await fetch(url, {
                 method: "GET",
@@ -244,9 +250,7 @@ jQuery(document).ready(function ($) {
             closeAfterSelect: true,
             loadThrottle: 300,
             respect_word_boundaries: false,
-            load: async function (query, callback) {
-                console.log(query, 'query');
-                
+            load: async function (query, callback) {                
                 if (query && !defaultOptions.some(el => el.text.toLowerCase().startsWith(query.toLowerCase())) && query.trim() !== '') {
                     try {
                         $('#spinner').show()

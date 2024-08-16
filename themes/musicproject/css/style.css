@@ -8,6 +8,10 @@
     z-index: 10
 }
 
+.cards-container {
+    @apply grid grid-cols-3 gap-4
+}
+
 .close-icon {
     max-width: 27px;
     max-height: 27px;

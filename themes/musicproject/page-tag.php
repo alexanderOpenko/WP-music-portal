@@ -48,15 +48,14 @@ $userTags = new WP_Query([
         Your tags
     </p>
 
-    <?php while($userTags->have_posts()) {
-        $userTags->the_post()
-    ?>
-        <div>
-            <a href="<?php the_permalink() ?>"> 
-                <?php the_title() ?>
-            </a>
-        </div>
-    <?php } ?>
+    <div class="card-list cards-container">
+        <?php while ($userTags->have_posts()) :
+            $userTags->the_post();
+            $image_url = get_post_image_custom(get_field('tag_image'), 'thumb');
+        ?>
+            <?php get_template_part('template-parts/card', null, ['image_url' => $image_url]) ?>
+        <?php endwhile ?>
+    </div>
 </div>
 
 <?php
