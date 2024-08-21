@@ -13,7 +13,6 @@ $tag_songs = new WP_Query([
   ]
 ]);
 
-
 $song_ids = wp_list_pluck($tag_songs->get_posts(), 'ID');
 
 while (have_posts()) :

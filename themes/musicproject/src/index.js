@@ -27,9 +27,66 @@ jQuery(document).ready(function ($) {
         $(document).on('click', '.play-first-artist-song-js', function (e) {
             playFirstArtistSong($(this))
         })
+
+        $(document).on('click', '.accordion-button', function (e) {
+            accordeonToggler($(this))
+        });
+
+        $(document).on('change', 'input[type="file"]', function (e) {
+            imageUploadHandler($(this), e)
+        });
+
+        $(document).on('click', '.delete-upload-image', function (e) {
+            deleteUploadedImage($(this), e)
+        });
+
+        $(document).on('click', '.upload-image-button-js', function (e) {
+            triggerImageFileInput($(this), e)
+        });
         // initSelectizeTags()
 
         $.data(document, 'eventsHandlerAttached', true);
+    }
+
+    function triggerImageFileInput(target) {
+        target.closest('form').find('input[type="file"]').click()
+    }
+
+    function deleteUploadedImage(target) {
+        const imageNameHolder = target.closest('form').find('.uploaded-image-name')
+        const imageInput = target.closest('form').find('input[type="file"]')
+        const imageHolder = target.closest('form').find('.image-holder')
+
+        imageInput.val('')
+        imageHolder.find('img').remove()
+        imageHolder.hide()
+        imageNameHolder.text('Image is not selected')
+    }
+
+    function imageUploadHandler(target, e) {
+        const imageNameHolder = target.closest('form').find('.uploaded-image-name')
+        const imageHolder = target.closest('form').find('.image-holder')
+        file = URL.createObjectURL(e.target.files[0])
+        
+        if (file && imageHolder) {
+            imageHolder.append(`<img src="${file}"/>`)
+            imageHolder.show()
+            imageNameHolder.text(e.target.files[0].name) 
+        } else {
+            imageNameHolder.text('Image is not selected')
+        }
+    }
+
+    function accordeonToggler(target) {
+        const $content = target.next('.accordion-content')
+
+        $content.slideToggle(300, function () {
+            if ($content.is(':visible')) {
+                target.text('Close Form');
+            } else {
+                target.text('Open Form');
+            }
+        });
     }
 
     function playFirstArtistSong() {
@@ -75,7 +132,7 @@ jQuery(document).ready(function ($) {
                 messageField.text("Artist created");
                 messageField.removeClass("error-message").addClass("success-message");
                 const container = $(".artists-list")
-                container.prepend(artistNode(json.post))
+                container.prepend(baseCardNode(json.post))
             }
         } catch (error) {
             messageField.text(error.message);
@@ -142,11 +199,14 @@ jQuery(document).ready(function ($) {
             });
             const json = await resp.json();
 
-            if (!resp.ok) {                
+            if (!resp.ok) {
                 throw new Error(json.message);
             } else {
                 messageField.text("tag created");
                 messageField.removeClass("error-message").addClass("success-message");
+
+                const container = $(".tags-list")
+                container.prepend(baseCardNode(json.post))
             }
         } catch (error) {
             messageField.text(error.message);
@@ -185,8 +245,8 @@ jQuery(document).ready(function ($) {
             url += `?artist=${$artist}`
         } else if ($tag) {
             url += `?tag=${$tag}`
-        } 
-        
+        }
+
         try {
             const resp = await fetch(url, {
                 method: "GET",
@@ -229,7 +289,7 @@ jQuery(document).ready(function ($) {
                     </div>`
     }
 
-    function artistNode(post) {
+    function baseCardNode(post) {
         return `
             <div class="artist-card flex flex-col">
                 <div class="artist-card_image relative pt-[100%]">
@@ -250,7 +310,7 @@ jQuery(document).ready(function ($) {
             closeAfterSelect: true,
             loadThrottle: 300,
             respect_word_boundaries: false,
-            load: async function (query, callback) {                
+            load: async function (query, callback) {
                 if (query && !defaultOptions.some(el => el.text.toLowerCase().startsWith(query.toLowerCase())) && query.trim() !== '') {
                     try {
                         $('#spinner').show()
@@ -305,13 +365,13 @@ function onYouTubeIframeAPIReady() {
 
         $(document).on('click', '.song-play', function () {
             $this = $(this)
-            $('.close-icon').show()
+            $('.close-video-js').show()
 
-            $(document).on('click', '.close-icon', function () { 
+            $(document).on('click', '.close-video-js', function () {
                 player.stopVideo()
                 player.destroy()
                 player = false
-                console.log(player,'videoId');
+                console.log(player, 'videoId');
 
                 $(this).hide()
             })
@@ -323,8 +383,8 @@ function onYouTubeIframeAPIReady() {
             createPlayer(videoId);
 
             function createPlayer(videoId) {
-                console.log(videoId,'videoId');
-                
+                console.log(videoId, 'videoId');
+
                 const allSongsOnPage = $('.song-item');
                 const index = allSongsOnPage.index($this.closest('.song-item'))
 
@@ -341,7 +401,7 @@ function onYouTubeIframeAPIReady() {
                         }
                     });
                 } else {
-                    console.log(player,'videoId');
+                    console.log(player, 'videoId');
 
                     player.loadVideoById(videoId)
                 }

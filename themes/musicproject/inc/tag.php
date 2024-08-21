@@ -50,7 +50,7 @@ function createTag($data) {
             'title' => $post->post_title
         ];
     }, $postQuery->posts);
-      return new WP_REST_Response(["post" =>  $tag], 200);
+      return new WP_REST_Response(["post" =>  $tag[0]], 200);
     } else {
       return new WP_REST_Response(["message" =>  "Content already exist"], 409);
     }

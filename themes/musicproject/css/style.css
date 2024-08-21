@@ -2,6 +2,15 @@
 @tailwind components;
 @tailwind utilities;
 
+label {
+    margin-bottom: 10px;
+    display: block;
+}
+
+a {
+    text-decoration: none;
+}
+
 .youtube-video iframe {
     height: 100%;
     width: 100%;
@@ -60,13 +69,48 @@ img {
 }
 
 /* typography */
-
 .primary-button {
-    @apply rounded bg-mywhite font-bold	tracking-wide text-xs leading-5	py-[10px] px-[20px]
+    @apply rounded bg-mywhite font-bold	tracking-wide text-sm leading-5	py-[10px] px-[20px]
+}
+
+.secondary-button {
+    @apply bg-gray-200 text-black border border-gray-300 rounded-lg py-2 px-4 text-base shadow-md capitalize;
+}
+
+.close-button.secondary-button {
+    @apply text-sm
+}
+
+.secondary-button:hover {
+    @apply bg-gray-300;
+}
+
+.submit-button {
+    @apply secondary-button
+}
+
+.submit-button {
+    border-color: #4CAF50!important
+}
+
+button[type="submit"] {
+    @apply submit-button mt-4
 }
 
 .tag-button {
     @apply rounded text-blue-600 border-blue-600 border border-solid py-[15px] px-[10px] leading-5	 
+}
+
+.tab {
+    @apply text-white bg-slate-400
+}
+
+.active {
+    @apply bg-slate-900 border-b-2 border-white;
+}
+
+.tab:hover {
+    @apply bg-slate-300;
 }
 
 header .avatar {
@@ -141,13 +185,13 @@ button {
 
 .banner {
     width: 100%;
-    height: 400px; /* Вы можете изменить высоту по вашему усмотрению */
+    height: 400px;
     display: flex;
 }
 
 .left-container {
     width: 50%;
-    background-color: #D7CFC5; /* Цвет слева (Warm Taupe) */
+    background-color: #D7CFC5;
 }
 
 .right-container {
