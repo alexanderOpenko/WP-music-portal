@@ -78,13 +78,13 @@ jQuery(document).ready(function ($) {
     }
 
     function accordeonToggler(target) {
-        const $content = target.next('.accordion-content')
+        const $content = target.closest('.accordion').find('.accordion-content')
 
         $content.slideToggle(300, function () {
             if ($content.is(':visible')) {
-                target.text('Close Form');
+                target.find('.button-text').text('Close Form');
             } else {
-                target.text('Open Form');
+                target.find('.button-text').text('Open Form');
             }
         });
     }
@@ -365,6 +365,8 @@ function onYouTubeIframeAPIReady() {
 
         $(document).on('click', '.song-play', function () {
             $this = $(this)
+            console.log($this, '$this');
+            
             $('.close-video-js').show()
 
             $(document).on('click', '.close-video-js', function () {
@@ -383,8 +385,6 @@ function onYouTubeIframeAPIReady() {
             createPlayer(videoId);
 
             function createPlayer(videoId) {
-                console.log(videoId, 'videoId');
-
                 const allSongsOnPage = $('.song-item');
                 const index = allSongsOnPage.index($this.closest('.song-item'))
 
@@ -413,16 +413,23 @@ function onYouTubeIframeAPIReady() {
 
             function onPlayerStateChange(event) {
                 if (event.data === YT.PlayerState.ENDED) {
-                    const nextSongItem = $this.closest('.song-item').next('.song-item');
-                    $this = nextSongItem
+                    fetch(universityData.root_url + `/wp-json/music/v1/updatePlayCount?id=${$this.data('song-id')}`, {
+                        headers: {
+                            "X-WP-Nonce": universityData.nonce
+                        }
+                    })
+
+                    const nextSongItem = $this.closest('.song-item').next('.song-item').find('.song-play');                    
 
                     if (!nextSongItem.length) {
                         return
                     }
 
-                    const nextSongLink = new URL(nextSongItem.find('.song-play').attr('data-song-link'));
+                    const nextSongLink = new URL(nextSongItem.attr('data-song-link'));
                     var videoId = nextSongLink.searchParams.get("v");
                     player.loadVideoById(videoId)
+
+                    $this = nextSongItem
                 }
             }
         });

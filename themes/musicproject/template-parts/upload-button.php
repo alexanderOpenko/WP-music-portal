@@ -1,4 +1,4 @@
-<div class="flex items-center">
+<div class="flex items-center mb-4">
     <button type="button" class="secondary-button !py-[3px] upload-image-button-js">
         Choose image
     </button>

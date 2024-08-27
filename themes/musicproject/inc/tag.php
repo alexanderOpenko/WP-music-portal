@@ -24,7 +24,6 @@ function createTag($data) {
           $meta_input['tag_image'] = $mediaId;
       }
 
-
       $tag_id = wp_insert_post([
         'post_type' => 'musictag',
         'post_status' => 'publish',
@@ -32,6 +31,8 @@ function createTag($data) {
         'post_content' => $data['content'],
         'meta_input' => $meta_input
       ], true);
+
+      updateUserTags($tag_id);
 
       $postQuery = new WP_query([
         'post_type' => 'musictag',

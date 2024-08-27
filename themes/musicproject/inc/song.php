@@ -6,7 +6,24 @@ function manageSong()
         'methods' => 'POST',
         'callback' => 'createSong'
     ]);
+
+    register_rest_route('music/v1/', 'updatePlayCount', [
+        'methods' => 'GET',
+        'callback' => 'updatePlayCount'
+    ]);
 }
+
+function updatePlayCount($data) {
+    $play_counts = get_field('play_count', $data['id']);
+
+    if (!$play_counts) {
+        $play_counts = 0;
+    }
+
+    $play_counts++;
+    update_field('play_count', $play_counts, $data['id']);
+}
+
 function createSong($data)
 {
     if (is_user_logged_in()) {
@@ -28,12 +45,14 @@ function createSong($data)
             'post_status' => 'publish',
             'post_content' => $data['content'],
             'meta_input' => [
-                'artist' => $artist_id,
+                'artist' => [$artist_id],
                 'tag' => explode(',', $data['tags']),
                 'song_link' => ['url' => $data['song_link']],
                 'band' => $data['band']
             ]
         ], true);
+
+        updateUserTags($data['tags']);
 
         $postQuery = new WP_query([
             'post_type' => 'song',

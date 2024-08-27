@@ -40,6 +40,55 @@ function checkArtistExisting(string $band): bool
     return $query->found_posts == 0 ? false : true;
 }
 
+function getMostPopular(int $posts_count, bool $load_artists = false, bool $load_songs = false): array {
+    $artists = null; 
+    $songs = null;
+
+    $songs_query = new WP_Query([
+        'post_type' => 'song',
+        'posts_per_page' => $posts_count,
+        'meta_key' => 'play_count',
+        'orderby' => 'meta_value_num',
+        'order' => 'DESC',
+    ]);
+    
+    $artists_id = [];
+    $songs_id = [];
+    
+    if ($songs_query->have_posts()) {
+        while ($songs_query->have_posts()) {
+            $songs_query->the_post();
+    
+            $artist_id = get_field('artist', get_the_ID())[0];
+    
+            if (!in_array($artist_id, $artists_id)) {
+                $artists_id[] = $artist_id;
+            }
+            $songs_id[] = get_the_ID();
+        }
+        wp_reset_postdata();
+    }
+
+    if ($load_artists) {
+        $artists = new WP_Query([
+            'post_type' => 'artist',
+            'post__in' => $artists_id,
+        ]);
+    }
+
+    if ($load_songs) {
+        $songs = new WP_Query([
+            'post_type' => 'song',
+            'post__in' => $songs_id,
+        ]);
+    }
+
+    return [
+        'artists' => $artists,
+        'songs' => $songs
+    ];
+}
+
 function update_artist_tags($data)
 {
     $artist_id = 0;
@@ -66,6 +115,34 @@ function update_artist_tags($data)
     return [
         'artist_id' => $artist_id
     ];
+}
+
+function updateUserTags(array|int $tags) {
+    $post_id = 0;
+
+    $query = new WP_Query([
+        'author' => get_current_user_id(),
+        'post_type' => 'usertags',
+        'post_status' => 'publish',
+        'posts_per_page' => 1
+    ]);
+
+    if ($query->have_posts()) {
+        $query->the_post();
+        $post_id = get_the_ID();
+        wp_reset_postdata();
+        add_value_to_field('tag', explode(',', $tags), $post_id);
+    } else {
+        wp_insert_post([
+            'post_type' => 'usertags',
+            'post_status' => 'publish',
+            'post_title' => wp_get_current_user()->nickname,
+            'meta_input' => [
+                'user' => get_current_user_id(),
+                'tag' => explode(',', $tags)
+            ]
+        ]);
+    }
 }
 
 function get_post_image_custom(int|string $image_data = null, $custom_size = 'thumbnail'): string

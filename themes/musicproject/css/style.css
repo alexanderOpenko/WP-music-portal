@@ -2,6 +2,11 @@
 @tailwind components;
 @tailwind utilities;
 
+svg {
+    height: 100%;
+    width: 100%;
+}
+
 label {
     margin-bottom: 10px;
     display: block;

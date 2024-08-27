@@ -23,14 +23,13 @@ while ($tags->have_posts()) {
 
 <div class="content-container">
     <div>
-        <h3>
-            Upload your songs
-        </h3>
-
         <div class="accordion">
-            <button class="accordion-button secondary-button mb-4">
-                Close Form
-            </button>
+            <div class="flex justify-between items-center">
+                <h3>
+                    Upload your songs
+                </h3>
+                <?php get_template_part('template-parts/single-accordion-button') ?>
+            </div>
 
             <div class="accordion-content">
                 <form class="song-form">

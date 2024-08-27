@@ -13,14 +13,13 @@ $userTags = new WP_Query([
     </p>
 
     <div class="md-content-centered p-[10px]">
-        <h3>
-            Create Global Music Tag
-        </h3>
-
         <div class="accordion">
-            <button class="accordion-button close-button secondary-button mb-4">
-                Close Form
-            </button>
+            <div class="flex justify-between items-center">
+                <h3>
+                    Create Global Music Tag
+                </h3>
+                <?php get_template_part('template-parts/single-accordion-button') ?>
+            </div>
 
             <div class="accordion-content">
                 <form class="tag-form">
