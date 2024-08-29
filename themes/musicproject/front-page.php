@@ -12,21 +12,19 @@ $songs = getMostPopular(9, false, true)['songs']
 
     <?php if (is_user_logged_in()) get_template_part('template-parts/recomended-tracks'); ?>
 
-    <h1>
-        Popular tracks
-    </h1>
+    <?php if ($songs) :?>
+        <h1>
+            Popular tracks
+        </h1>
 
-    <div>
-        <?php while ($songs->have_posts()) {
-            $songs->the_post();
-            get_template_part('template-parts/song-item');
-        }
-        ?>
-    </div>
-
-    <h1>
-        Popular artists
-    </h1>
+        <div>
+            <?php while ($songs->have_posts()) {
+                $songs->the_post();
+                get_template_part('template-parts/song-item');
+            }
+            ?>
+        </div>
+    <?php endif ?>
 
     <div>
         <?php get_template_part('template-parts/popular-artists') ?>

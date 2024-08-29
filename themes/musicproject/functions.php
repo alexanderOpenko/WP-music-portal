@@ -27,7 +27,7 @@ function music_files()
     wp_enqueue_script('main-music-script', get_theme_file_uri('/src/index.js'), ['jquery'], false, ['in_footer' => true]);
     wp_enqueue_script( 'yt-iframe', 'https://www.youtube.com/iframe_api', [], false, ['in_footer' => true] );
 
-    wp_localize_script('main-music-script', 'universityData', [
+    wp_localize_script('main-music-script', 'musicData', [
         'root_url' => get_site_url(),
         'nonce' => wp_create_nonce('wp_rest'),
         'theme_url' => get_template_directory_uri()

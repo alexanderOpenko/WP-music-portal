@@ -24,7 +24,7 @@ while ($tags->have_posts()) {
             <h3>
                 Add artist to your list
             </h3>
-            <?php get_template_part('template-parts/single-accordion-button') ?>
+            <?php get_template_part('template-parts/single-accordion-button', null, ['open_name' => 'Open form', 'close_name' => 'Close form', 'is_open' => true]) ?>
         </div>
 
         <div class="accordion-content">

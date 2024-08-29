@@ -4,14 +4,28 @@
             <?php the_title(); ?>
         </h1>
 
-        <button class="uppercase play-first-artist-song-js primary-button py-[9px] px-[20px] flex items-center">
-            <div class="chartlist-play-button mr-[4px]">
-            </div>
+        <div class="flex">
+            <button class="uppercase play-first-artist-song-js primary-button py-[9px] px-[20px] flex items-center">
+                <div class="chartlist-play-button mr-[4px]">
+                </div>
 
-            <div>
-                <?php echo $args['title'] ?>
-            </div>
-        </button>
+                <div>
+                    <?php echo $args['title'] ?>
+                </div>
+            </button>
+
+            <?php if (isset($args['listens']) && $args['listens'] > 0) : ?>
+                <div class="ml-4">
+                    <div>
+                        listens
+                    </div>
+
+                    <div>
+                        <?php echo $args['listens']; ?>
+                    </div>
+                </div>
+            <?php endif ?>
+        </div>
     </div>
 
     <div class="right-container">

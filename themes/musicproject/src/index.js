@@ -20,6 +20,10 @@ jQuery(document).ready(function ($) {
             ajaxLinkHandler(e, $(this))
         })
 
+        $(window).bind('popstate', function (e) {
+            ajaxLinkHandler(e, null, window.location.href, true)
+        });
+
         $(document).on('click', '.upload-song-page-js', function (e) {
             handleUploadedSongs($(this))
         })
@@ -43,9 +47,39 @@ jQuery(document).ready(function ($) {
         $(document).on('click', '.upload-image-button-js', function (e) {
             triggerImageFileInput($(this), e)
         });
+
+        $(document).on('click', '.delete-song', function () {
+            deleteSongHandler($(this))
+        })
         // initSelectizeTags()
 
         $.data(document, 'eventsHandlerAttached', true);
+    }
+
+    async function deleteSongHandler(target) {
+        const songId = target.data('song-id')
+        const songName = target.data('song-name')
+
+        const deleteConfirm = confirm(`do you realy want to delete song ${songName} ?`)
+
+        if (deleteConfirm) {
+            try {
+                const resp = await fetch(musicData.root_url + "/wp-json/wp/v2/song/" + songId, {
+                    method: 'DELETE',
+                    headers: {
+                        'X-WP-Nonce': musicData.nonce
+                    }
+                })
+               
+                if (window.location.pathname.includes(songName.replace(' ', '-'))) {                    
+                    window.history.back()
+                } else {
+                    target.closest('.song-item').remove()
+                }
+            } catch {
+                alert('Something went wrong')
+            }
+        }
     }
 
     function triggerImageFileInput(target) {
@@ -67,11 +101,11 @@ jQuery(document).ready(function ($) {
         const imageNameHolder = target.closest('form').find('.uploaded-image-name')
         const imageHolder = target.closest('form').find('.image-holder')
         file = URL.createObjectURL(e.target.files[0])
-        
+
         if (file && imageHolder) {
             imageHolder.append(`<img src="${file}"/>`)
             imageHolder.show()
-            imageNameHolder.text(e.target.files[0].name) 
+            imageNameHolder.text(e.target.files[0].name)
         } else {
             imageNameHolder.text('Image is not selected')
         }
@@ -82,9 +116,11 @@ jQuery(document).ready(function ($) {
 
         $content.slideToggle(300, function () {
             if ($content.is(':visible')) {
-                target.find('.button-text').text('Close Form');
+                target.find('.button-open-text').hide();
+                target.find('.button-close-text').show();
             } else {
-                target.find('.button-text').text('Open Form');
+                target.find('.button-open-text').show();
+                target.find('.button-close-text').hide();
             }
         });
     }
@@ -117,11 +153,11 @@ jQuery(document).ready(function ($) {
         data.set('band', name)
 
         try {
-            const resp = await fetch(universityData.root_url + "/wp-json/music/v1/createArtist", {
+            const resp = await fetch(musicData.root_url + "/wp-json/music/v1/createArtist", {
                 method: "POST",
                 body: data,
                 headers: {
-                    "X-WP-Nonce": universityData.nonce,
+                    "X-WP-Nonce": musicData.nonce,
                 }
             });
             const json = await resp.json();
@@ -160,11 +196,11 @@ jQuery(document).ready(function ($) {
         data.append('tags', tags)
 
         try {
-            const resp = await fetch(universityData.root_url + "/wp-json/music/v1/createSong", {
+            const resp = await fetch(musicData.root_url + "/wp-json/music/v1/createSong", {
                 method: "POST",
                 body: data,
                 headers: {
-                    "X-WP-Nonce": universityData.nonce,
+                    "X-WP-Nonce": musicData.nonce,
                 }
             });
             const json = await resp.json();
@@ -190,11 +226,11 @@ jQuery(document).ready(function ($) {
         const data = new FormData(form[0]);
 
         try {
-            const resp = await fetch(universityData.root_url + "/wp-json/music/v1/manageTag", {
+            const resp = await fetch(musicData.root_url + "/wp-json/music/v1/manageTag", {
                 method: "POST",
                 body: data,
                 headers: {
-                    "X-WP-Nonce": universityData.nonce,
+                    "X-WP-Nonce": musicData.nonce,
                 }
             });
             const json = await resp.json();
@@ -214,19 +250,21 @@ jQuery(document).ready(function ($) {
         }
     }
     // Делегируем событие click на документ
-    function ajaxLinkHandler(e, target) {
+    function ajaxLinkHandler(e, target, urlParam = null, isPopState = false) {
         e.preventDefault();
 
-        const url = target.attr('href');
+        const url = urlParam ?? target.attr('href');
 
-        // Подгрузка контента
         $.ajax({
             url: url,
             success: function (data) {
                 const tempElement = $('<div>').html(data);
                 const contentData = tempElement.find('#content-container').html();
                 $('#content-container').html(contentData);
-                history.pushState(null, '', url);
+                // Обновляем URL только если это не popstate
+                if (!isPopState) {
+                    history.pushState(null, '', url);
+                }
             }
         });
     }
@@ -239,7 +277,7 @@ jQuery(document).ready(function ($) {
 
         target.attr('data-page', $pageData + 1);
 
-        let url = universityData.root_url + `/wp-json/music/v1/songsPaginations?page=${$pageData}`
+        let url = musicData.root_url + `/wp-json/music/v1/songsPaginations?page=${$pageData}`
 
         if ($artist) {
             url += `?artist=${$artist}`
@@ -251,7 +289,7 @@ jQuery(document).ready(function ($) {
             const resp = await fetch(url, {
                 method: "GET",
                 headers: {
-                    "X-WP-Nonce": universityData.nonce,
+                    "X-WP-Nonce": musicData.nonce,
                 }
             });
 
@@ -314,10 +352,10 @@ jQuery(document).ready(function ($) {
                 if (query && !defaultOptions.some(el => el.text.toLowerCase().startsWith(query.toLowerCase())) && query.trim() !== '') {
                     try {
                         $('#spinner').show()
-                        const resp = await fetch(universityData.root_url + `/wp-json/music/v1/searchTags?q=${encodeURIComponent(query)}`, {
+                        const resp = await fetch(musicData.root_url + `/wp-json/music/v1/searchTags?q=${encodeURIComponent(query)}`, {
                             method: "GET",
                             headers: {
-                                "X-WP-Nonce": universityData.nonce
+                                "X-WP-Nonce": musicData.nonce
                             }
                         })
 
@@ -365,17 +403,16 @@ function onYouTubeIframeAPIReady() {
 
         $(document).on('click', '.song-play', function () {
             $this = $(this)
-            console.log($this, '$this');
-            
             $('.close-video-js').show()
+            $('.youtube-video').css('z-index', 10)
 
             $(document).on('click', '.close-video-js', function () {
                 player.stopVideo()
                 player.destroy()
                 player = false
-                console.log(player, 'videoId');
 
                 $(this).hide()
+                $('.youtube-video').css('z-index', -1)
             })
 
             const dataLink = $(this).data('song-link').replace(' ,', '')
@@ -401,8 +438,6 @@ function onYouTubeIframeAPIReady() {
                         }
                     });
                 } else {
-                    console.log(player, 'videoId');
-
                     player.loadVideoById(videoId)
                 }
             }
@@ -413,13 +448,13 @@ function onYouTubeIframeAPIReady() {
 
             function onPlayerStateChange(event) {
                 if (event.data === YT.PlayerState.ENDED) {
-                    fetch(universityData.root_url + `/wp-json/music/v1/updatePlayCount?id=${$this.data('song-id')}`, {
+                    fetch(musicData.root_url + `/wp-json/music/v1/updatePlayCount?id=${$this.data('song-id')}`, {
                         headers: {
-                            "X-WP-Nonce": universityData.nonce
+                            "X-WP-Nonce": musicData.nonce
                         }
                     })
 
-                    const nextSongItem = $this.closest('.song-item').next('.song-item').find('.song-play');                    
+                    const nextSongItem = $this.closest('.song-item').next('.song-item').find('.song-play');
 
                     if (!nextSongItem.length) {
                         return

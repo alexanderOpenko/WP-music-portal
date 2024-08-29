@@ -40,9 +40,50 @@ function checkArtistExisting(string $band): bool
     return $query->found_posts == 0 ? false : true;
 }
 
+function my_tags() {
+    $my_tags_post = new WP_Query([
+        'author' => get_current_user_id(),
+        'post_type' => 'usertags',
+        'post_status' => 'publish',
+    ]);
+    
+    $my_tags = [];
+    
+    if ($my_tags_post->have_posts()) {
+        $my_tags_post->the_post();
+        $my_tags_post_id = get_the_ID();
+        $my_tags = get_post_field('tag', $my_tags_post_id);
+    }
+
+    return $my_tags;
+}
+
+function recomended_post_type(array $tags = [], string $post_type) {
+    $meta_query = ['relation' => 'OR'];
+
+    foreach ($tags as $tag) {
+        $meta_query[] = [
+            'key' => 'tag',
+            'value' => '"' . $tag . '"',
+            'compare' => 'LIKE',
+        ];
+    }
+
+    $recomended_posts = new WP_Query([
+        'post_type' => $post_type,
+        // 'author__not_in' => [get_current_user_id()],
+        'post_status' => 'publish',
+        'meta_query' => $meta_query,
+    ]);
+
+    return $recomended_posts;
+}
+
 function getMostPopular(int $posts_count, bool $load_artists = false, bool $load_songs = false): array {
     $artists = null; 
     $songs = null;
+    $artists_id = [];
+    $songs_id = [];
 
     $songs_query = new WP_Query([
         'post_type' => 'song',
@@ -52,8 +93,12 @@ function getMostPopular(int $posts_count, bool $load_artists = false, bool $load
         'order' => 'DESC',
     ]);
     
-    $artists_id = [];
-    $songs_id = [];
+    if (!$songs_query->found_posts) {
+        return [
+            'artists' => [],
+            'songs' => []
+        ];
+    }
     
     if ($songs_query->have_posts()) {
         while ($songs_query->have_posts()) {
@@ -69,7 +114,7 @@ function getMostPopular(int $posts_count, bool $load_artists = false, bool $load
         wp_reset_postdata();
     }
 
-    if ($load_artists) {
+    if ($load_artists ) {
         $artists = new WP_Query([
             'post_type' => 'artist',
             'post__in' => $artists_id,
@@ -117,7 +162,7 @@ function update_artist_tags($data)
     ];
 }
 
-function updateUserTags(array|int $tags) {
+function updateUserTags(array|int|string $tags) {
     $post_id = 0;
 
     $query = new WP_Query([

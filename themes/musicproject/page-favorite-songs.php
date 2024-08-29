@@ -28,7 +28,7 @@ while ($tags->have_posts()) {
                 <h3>
                     Upload your songs
                 </h3>
-                <?php get_template_part('template-parts/single-accordion-button') ?>
+                <?php get_template_part('template-parts/single-accordion-button', null, ['open_name' => 'Open form', 'close_name' => 'Close form', 'is_open' => true]) ?>
             </div>
 
             <div class="accordion-content">
@@ -59,7 +59,7 @@ while ($tags->have_posts()) {
 
                             <label for="new-song-tags">
                                 <span>
-                                    Pleaseselect multiple tags. If there are no tags available, you can create them on the tags page.
+                                    Please select multiple tags. If there are no tags available, you can create them on the tags page.
                                 </span>
                             </label>
 

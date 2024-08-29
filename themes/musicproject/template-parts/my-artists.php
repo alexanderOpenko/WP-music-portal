@@ -30,8 +30,6 @@ function active_tab_classes($tab_name) {
         <?php while ($args['artists']->have_posts()) :
             $args['artists']->the_post();
             $image_id = get_field('artist_image');
-            // $metadata = wp_get_attachment_metadata($image_id);
-            // print json_encode($metadata);
             $image_url = get_post_image_custom(get_field('artist_image'), 'thumb');
         ?>
             <?php get_template_part('template-parts/card', null, ['image_url' => $image_url]) ?>

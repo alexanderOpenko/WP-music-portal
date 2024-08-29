@@ -26,9 +26,13 @@ a {
     @apply grid grid-cols-3 gap-4
 }
 
-.close-icon {
+.icon {
     max-width: 27px;
     max-height: 27px;
+    cursor: pointer;
+}
+
+.close-icon { 
     margin: 0 0 0 auto;
 }
 
