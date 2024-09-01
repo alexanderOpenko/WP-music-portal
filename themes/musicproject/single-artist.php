@@ -1,6 +1,7 @@
 <?php
 get_header();
 $ID = 0;
+$song_ids = [];
 while (have_posts()) :
     the_post();
     $ID = get_the_ID();

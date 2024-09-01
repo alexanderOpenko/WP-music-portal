@@ -1,9 +1,12 @@
 <?php
 get_header();
+$post_id = 0;
+
 while (have_posts()) {
   the_post();
+  $post_id = get_the_id();
   $tag_ids = get_post_field('tag', '', false);
-  $artists = recomended_post_type($tag_ids, 'artist');
+  $artists = recomended_post_type('artist', $tag_ids);
   $image_id = get_post_field('artist_image', get_field('artist')[0]);
   $image_url = get_post_image_custom($image_id, 'full');
   get_template_part('template-parts/banner', null, ['image_url' => $image_url, 'title' => 'play song', 'listens' => get_field('play_count')]);
@@ -12,6 +15,22 @@ while (have_posts()) {
 ?>
 
 <div class="content-container">
+  <div class="accordion">
+    <div class="flex justify-between items-center mb-4">
+      <?php get_template_part('template-parts/single-accordion-button', null, ['open_name' => 'Edit tags', 'close_name' => 'Collapse tag edditing', 'is_open' => false]) ?>
+    </div>
+
+    <div class="accordion-content invisible h-0">
+      <form class="update-song-tag">
+        <input type="hidden" value="<?php echo $post_id ?>" name="post_id"/>
+        <?php get_template_part('template-parts/tag-field', null, ['tag_ids' => $tag_ids]) ?>
+        <button class="mb-2" type="submit">
+            submit
+        </button>
+      </form>
+    </div>
+  </div>
+
   <?php
   get_template_part('template-parts/tags-list', null, ['tag_ids' => $tag_ids]);
 

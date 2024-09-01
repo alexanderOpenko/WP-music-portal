@@ -7,18 +7,6 @@ $uploaded_songs = new WP_Query([
     'posts_per_page' => 15,
     'paged' => get_query_var('paged') ?: 1
 ]);
-
-$tags = new WP_Query([
-    'post_type' => 'musictag',
-    'posts_per_page' => 10,
-]);
-
-$dafault_tags = [];
-
-while ($tags->have_posts()) {
-    $tags->the_post();
-    array_push($dafault_tags, ['value' => get_the_ID(), 'text' =>  get_the_title()]);
-}
 ?>
 
 <div class="content-container">
@@ -57,25 +45,18 @@ while ($tags->have_posts()) {
                             </label>
                             <input name="song_link" required id="song-link" class="input" type="url">
 
-                            <label for="new-song-tags">
-                                <span>
-                                    Please select multiple tags. If there are no tags available, you can create them on the tags page.
-                                </span>
-                            </label>
+                            <div class="accordion">
+                                <div class="flex justify-between items-center mb-4">
+                                    <?php get_template_part('template-parts/single-accordion-button', null, ['open_name' => 'Add tags', 'close_name' => 'Collapse tags', 'is_open' => false]) ?>
+                                </div>
+                                <div class="accordion-content invisible h-0">
+                                    <label for="tags-select">
+                                        <span>
+                                            Please select multiple tags. If there are no tags available, you can create them on the tags page.
+                                        </span>
+                                    </label>
 
-                            <div class="mb-[15px] tags-select-wrapper">
-                                <select multiple name="tags" class="input !mb-0" type="text" id="new-song-tags" data-default-tags='<?php echo json_encode($dafault_tags) ?>'>
-                                    <?php while ($tags->have_posts()) :
-                                        $tags->the_post() ?>
-                                        <option value="<?php echo get_the_ID() ?>"><?php the_title() ?></option>
-                                    <?php endwhile;
-                                    wp_reset_postdata(); ?>
-                                </select>
-
-                                <div class="bg-white relative max-h-[16px] px-[16px]">
-                                    <div id="spinner" class="spinner absolute bg-white hidden"></div>
-                                    <div class="select-message-field">
-                                    </div>
+                                    <?php get_template_part('template-parts/tag-field') ?>
                                 </div>
                             </div>
                         </div>

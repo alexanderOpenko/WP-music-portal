@@ -1,10 +1,26 @@
 <?php add_action('rest_api_init', 'tagRoutes');
+add_action('rest_api_init', 'updateTagRoutes');
 
 function tagRoutes() {
   register_rest_route('music/v1', 'manageTag', array(
     'methods' => 'POST',
     'callback' => 'createTag'
   ));
+}
+
+function updateTagRoutes() {
+  register_rest_route('music/v1', 'updateTag', array(
+    'methods' => 'POST',
+    'callback' => 'updateTag'
+  ));
+}
+
+function updateTag($data) {
+  if ($data['tags']) {
+    add_value_to_field('tag', explode(',', $data['tags']), $data['post_id']);
+  } else {
+    update_post_meta($data['post_id'], 'tag', []);
+  }
 }
 
 function createTag($data) {

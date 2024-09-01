@@ -1,4 +1,6 @@
 jQuery(document).ready(function ($) {
+    const $selector = $('#tags-select')
+
     if (!$.data(document, 'eventsHandlerAttached')) {
         eventsRegistration()
     }
@@ -6,6 +8,10 @@ jQuery(document).ready(function ($) {
     function eventsRegistration() {
         $(document).on('submit', '.tag-form', function (e) {
             submitTagForm(e, $(this));
+        });
+        
+        $(document).on('submit', '.update-song-tag', function (e) {
+            submitUpdateTag(e, $(this));
         });
 
         $(document).on('submit', '.song-form', function (e) {
@@ -64,7 +70,7 @@ jQuery(document).ready(function ($) {
 
         if (deleteConfirm) {
             try {
-                const resp = await fetch(musicData.root_url + "/wp-json/wp/v2/song/" + songId, {
+                const resp = await fetch(musicData.root_url + "/wp-json/wp/v2/song/" + songId + '?force=true', {
                     method: 'DELETE',
                     headers: {
                         'X-WP-Nonce': musicData.nonce
@@ -114,15 +120,23 @@ jQuery(document).ready(function ($) {
     function accordeonToggler(target) {
         const $content = target.closest('.accordion').find('.accordion-content')
 
-        $content.slideToggle(300, function () {
-            if ($content.is(':visible')) {
+        function toggleVisibilityAndHeight(element, duration) {
+            if (element.css('visibility') === 'visible') {
+                element.animate({ height: 0 }, duration, function() {
+                    element.addClass('invisible');
+                    element.removeClass('visible');
+                    target.find('.button-open-text').show();
+                    target.find('.button-close-text').hide();
+                });
+            } else {
+                element.addClass('visible').animate({ height: element.get(0).scrollHeight }, duration);
+                element.removeClass('invisible');
                 target.find('.button-open-text').hide();
                 target.find('.button-close-text').show();
-            } else {
-                target.find('.button-open-text').show();
-                target.find('.button-close-text').hide();
             }
-        });
+        }
+        
+        toggleVisibilityAndHeight($content, 300);
     }
 
     function playFirstArtistSong() {
@@ -219,6 +233,23 @@ jQuery(document).ready(function ($) {
         }
     }
 
+    async function submitUpdateTag(e, form) {
+        e.preventDefault()
+        const data = new FormData(form[0]);
+
+        try {
+            const resp = await fetch(musicData.root_url + "/wp-json/music/v1/updateTag", {
+                method: "POST",
+                body: data,
+                headers: {
+                    "X-WP-Nonce": musicData.nonce,
+                }
+            }); 
+        } catch {
+            alert('something went wrong')
+        }
+    }
+
     //submit tag
     async function submitTagForm(e, form) {
         e.preventDefault();
@@ -226,7 +257,7 @@ jQuery(document).ready(function ($) {
         const data = new FormData(form[0]);
 
         try {
-            const resp = await fetch(musicData.root_url + "/wp-json/music/v1/manageTag", {
+            const resp = await fetch(musicData.root_url + "/wp-json/music/v1/updateTag", {
                 method: "POST",
                 body: data,
                 headers: {
@@ -340,60 +371,83 @@ jQuery(document).ready(function ($) {
             </div>
         `
     }
-
-    const $selector = $('#new-song-tags')
+   
     if ($selector.length) {
-        const defaultOptions = $selector.data('default-tags')
-        const selectizeInstance = $selector.selectize({
-            closeAfterSelect: true,
-            loadThrottle: 300,
-            respect_word_boundaries: false,
-            load: async function (query, callback) {
-                if (query && !defaultOptions.some(el => el.text.toLowerCase().startsWith(query.toLowerCase())) && query.trim() !== '') {
-                    try {
-                        $('#spinner').show()
-                        const resp = await fetch(musicData.root_url + `/wp-json/music/v1/searchTags?q=${encodeURIComponent(query)}`, {
-                            method: "GET",
-                            headers: {
-                                "X-WP-Nonce": musicData.nonce
+        initSelectize()
+    }
+
+    function initSelectize() {
+            const defaultOptions = $selector.data('default-tags')
+            selectizeInstance = $selector.selectize({
+                closeAfterSelect: false,
+                dropdownDirection: 'down',
+                loadThrottle: 300,
+                respect_word_boundaries: false,
+                load: async function (query, callback) {
+                    if (query && !defaultOptions.some(el => el.text.toLowerCase().startsWith(query.toLowerCase())) && query.trim() !== '') {
+                        try {
+                            $('#spinner').show()
+                            const resp = await fetch(musicData.root_url + `/wp-json/music/v1/searchTags?q=${encodeURIComponent(query)}`, {
+                                method: "GET",
+                                headers: {
+                                    "X-WP-Nonce": musicData.nonce
+                                }
+                            })
+    
+                            const json = await resp.json()
+    
+                            if (!resp.ok) {
+                                throw new Error(json.message)
                             }
-                        })
-
-                        const json = await resp.json()
-
-                        if (!resp.ok) {
-                            throw new Error(json.message)
+    
+                            if (json.tags.length) {
+                                $('.tags-select-wrapper').find('.select-message-field').removeClass('error-message').text('')
+                                return callback(json.tags)
+                            }
+    
+                            $('.tags-select-wrapper').find('.select-message-field').addClass('error-message').text('no tags found')
+                            return callback()
+                        } catch (error) {
+                            alert('something went wrong')
+                            // this.clearOptions();
+                            // ;
+                        } finally {
+                            $('#spinner').hide();
                         }
-
-                        if (json.tags.length) {
-                            $('.tags-select-wrapper').find('.select-message-field').removeClass('error-message').text('')
-                            return callback(json.tags)
-                        }
-
-                        $('.tags-select-wrapper').find('.select-message-field').addClass('error-message').text('no tags found')
-                        return callback()
-                    } catch (error) {
-                        alert('something went wrong')
-                        // this.clearOptions();
-                        // ;
-                    } finally {
-                        $('#spinner').hide();
+                    } else {
+                        $('.tags-select-wrapper').find('.message-field').removeClass('error-message').text('')
                     }
-                } else {
-                    $('.tags-select-wrapper').find('.message-field').removeClass('error-message').text('')
+    
+                    return callback()
+                },
+                onType: function (value) {
+                    if (!value) {
+                        this.addOption(defaultOptions);
+                        $('.tags-select-wrapper').find('.message-field').removeClass('error-message').text('')
+                        this.refreshOptions(false);
+                    }
+                },
+                onItemAdd: function() {
+                    setTimeout(() => {
+                        this.focus(); // Устанавливаем фокус на поле ввода после открытия
+                    }, 10);
+                },
+                onBlur: function() {
+                    $('.selectize-dropdown').show()
+                },
+                onInitialize: function() {
+                    this.open();
+                    this.blur();
                 }
+            })[0].selectize
+    
+            $(document).on('click', '.selectize-input', function (e) {
+                selectizeInstance.focus();
+            });
+            
+            console.log(selectizeInstance, 'selectizeInstance');
 
-                return callback()
-            },
-            onType: function (value) {
-                if (!value) {
-                    this.addOption(defaultOptions);
-                    $('.tags-select-wrapper').find('.message-field').removeClass('error-message').text('')
-                    alert(2)
-                    this.refreshOptions(false);
-                }
-            }
-        })[0].selectize
+            // $(".selectize-dropdown").show();
     }
 });
 

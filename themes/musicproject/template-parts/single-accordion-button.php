@@ -1,10 +1,10 @@
 <?php 
     $open_name = $args['open_name'] ?? 'expand';
     $close_name = $args['close_name'] ?? 'collapse';
-    $is_open_dafault = $args['is_open'] ?? false
+    $is_open_dafault = $args['is_open'] ?? false;
 ?>
 
-<button class="accordion-button secondary-button flex items-center">
+<button class="accordion-button secondary-button flex items-center" type="button">
     <span class="button-open-text <?php echo $is_open_dafault ? 'hidden' : ''?>">
         <?php echo $open_name ?>
     </span>

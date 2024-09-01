@@ -1,6 +1,6 @@
 <?php
 $my_tags = my_tags();
-$recomended_tracks = recomended_post_type($my_tags, 'song')
+$recomended_tracks = recomended_post_type('song', $my_tags)
 ?>
 
 <?php if ($recomended_tracks->found_posts) : ?>

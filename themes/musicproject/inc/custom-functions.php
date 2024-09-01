@@ -58,7 +58,7 @@ function my_tags() {
     return $my_tags;
 }
 
-function recomended_post_type(array $tags = [], string $post_type) {
+function recomended_post_type(string $post_type, array $tags = []) {
     $meta_query = ['relation' => 'OR'];
 
     foreach ($tags as $tag) {
