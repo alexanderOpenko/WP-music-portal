@@ -236,3 +236,156 @@ button {
     top: unset!important;
     left: unset!important;
 }
+
+/* search */
+
+.search-overlay {
+    overflow-y: auto;
+    overflow-x: hidden;
+    z-index: 110;
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(255, 255, 255, 0.96);
+    visibility: hidden;
+    opacity: 0;
+    transform: scale(1.09);
+    transition: opacity 0.3s, transform 0.3s, visibility 0.3s;
+    box-sizing: border-box;
+  }
+  
+  .search-overlay p {
+    padding-top: 15px;
+  }
+  
+  .search-overlay .event-summary p {
+    padding-top: 0;
+  }
+  
+  .search-overlay .event-summary {
+    margin-bottom: 0;
+    margin-top: 20px;
+  }
+  
+  body.admin-bar .search-overlay {
+    top: 32px;
+  }
+  
+  .search-overlay__top {
+    background-color: rgba(0, 0, 0, 0.12);
+  }
+  
+  .search-overlay__icon {
+    margin-right: 10px;
+    font-size: 1.8rem;
+    color: var(--darkOrange);
+  }
+  
+  @media (min-width: 768px) {
+    .search-overlay__icon {
+      font-size: 2.5rem;
+    }
+  }
+  
+  .search-overlay--active {
+    visibility: visible;
+    opacity: 1;
+    transform: scale(1);
+  }
+  
+  .search-overlay__section-title {
+    margin: 30px 0 1px 0;
+    font-weight: 400;
+    color: var(--mainBlue);
+    font-size: 2rem;
+    padding: 15px 0;
+    border-bottom: 1px solid #ccc;
+  }
+  
+  .search-overlay__close {
+    position: absolute;
+    right: 16px;
+    font-size: 2.1rem;
+    cursor: pointer;
+    transition: all 0.3s;
+    color: var(--darkOrange);
+    line-height: 0.7;
+  }
+  
+  .search-overlay__close:hover {
+    opacity: 1;
+  }
+  
+  .search-overlay .one-half {
+    padding-bottom: 0;
+  }
+  
+  .search-term {
+    width: 75%;
+    box-sizing: border-box;
+    border: none;
+    padding: 15px 0;
+    margin: 0;
+    background-color: transparent;
+    font-size: 30px;
+    font-weight: 300;
+    outline: none;
+    color: var(--darkOrange);
+  }
+  
+  @media (min-width: 576px) {
+    .search-term {
+      font-size: 26px;
+    }
+  }
+  
+  @media (min-width: 768px) {
+    .search-term {
+      width: 80%;
+      font-size: 28px;
+    }
+  }
+  
+  .body-no-scroll {
+    overflow: hidden;
+  }
+  
+  .one-third {
+    width: 33.33%;
+    padding-bottom: 1.6rem;
+    float: left;
+    box-sizing: border-box;
+    padding-right: 50px;
+  }
+
+  .link-list li:not(.songs .link-list li) {
+    padding: 1rem 0;
+    font-size: 1.5rem;
+    border-bottom: 1px dotted #DEDEDE;
+  }
+  
+  .search-overlay .link-list li {
+    font-size: 1.3rem;
+  }
+  
+  .link-list li:last-child {
+    border-bottom: none;
+  }
+  
+  .link-list a {
+    color: #ff7300; 
+  }
+
+  ul {
+    padding: 0
+  }
+
+  li {
+    list-style: none;
+  }
+  
+  .search-no-results {
+    margin-top: 20px
+  }

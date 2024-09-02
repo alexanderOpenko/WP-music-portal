@@ -56,14 +56,7 @@ $userTags = new WP_Query([
             Your tags
         </p>
 
-        <div class="card-list tags-list cards-container">
-            <?php while ($userTags->have_posts()) :
-                $userTags->the_post();
-                $image_url = get_post_image_custom(get_field('tag_image'), 'thumb');
-            ?>
-                <?php get_template_part('template-parts/card', null, ['image_url' => $image_url]) ?>
-            <?php endwhile ?>
-        </div>
+        <?php get_template_part('template-parts/tags-grid', null, ['tags' => $userTags]) ?>
     </div>
 </div>
 

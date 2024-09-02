@@ -52,7 +52,9 @@ $uploaded_songs = new WP_Query([
                                 <div class="accordion-content invisible h-0">
                                     <label for="tags-select">
                                         <span>
-                                            Please select multiple tags. If there are no tags available, you can create them on the tags page.
+                                            Search for existing tags or create your own. If no suitable tags are found, you can create new ones on the <a class="ajax-link" href="<?php echo site_url('/tag/') ?>">
+                                                tags page
+                                            </a>
                                         </span>
                                     </label>
 

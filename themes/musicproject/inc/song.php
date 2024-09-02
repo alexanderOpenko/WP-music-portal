@@ -62,7 +62,9 @@ function createSong($data)
         //for rest api response
         $post = array_map(function($post) {
             return [
+                'ID' => get_the_ID(),
                 'song_link' => get_field('song_link', $post->ID)['url'],
+                'band' => get_field('band'),
                 'link' => get_permalink($post->ID),
                 'title' => $post->post_title
             ];

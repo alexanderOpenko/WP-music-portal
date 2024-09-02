@@ -4,7 +4,7 @@
   integrity="sha512-IOebNkvA/HZjMM7MxL0NYeLYEalloZ8ckak+NDtOViP7oiYzG5vn6WVXyrJDiJPhl4yRdmNAG49iuLmhkUdVsQ=="
   crossorigin="anonymous"
   referrerpolicy="no-referrer"
-  async
-></script>
+  async></script>
 </body>
+
 </html>
