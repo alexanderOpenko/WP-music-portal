@@ -14,14 +14,23 @@ function manageSong()
 }
 
 function updatePlayCount($data) {
-    $play_counts = get_field('play_count', $data['id']);
+    $song_play_counts = get_field('play_count', $data['id']);
+    $artist_id = get_field('artist', $data['id'])[0];
+    $artist_play_counts = get_field('play_count', $artist_id);
 
-    if (!$play_counts) {
-        $play_counts = 0;
+    if (!$song_play_counts) {
+        $song_play_counts = 0;
     }
 
-    $play_counts++;
-    update_field('play_count', $play_counts, $data['id']);
+    if (!$artist_play_counts) {
+        $artist_play_counts = 0;
+    }
+
+    $song_play_counts++;
+    $artist_play_counts++;
+
+    update_field('play_count', $song_play_counts, $data['id']);
+    update_field('play_count', $artist_play_counts, $artist_id);
 }
 
 function createSong($data)
@@ -62,9 +71,9 @@ function createSong($data)
         //for rest api response
         $post = array_map(function($post) {
             return [
-                'ID' => get_the_ID(),
+                'ID' => $post->ID,
                 'song_link' => get_field('song_link', $post->ID)['url'],
-                'band' => get_field('band'),
+                'band' => get_field('band', $post->ID),
                 'link' => get_permalink($post->ID),
                 'title' => $post->post_title
             ];

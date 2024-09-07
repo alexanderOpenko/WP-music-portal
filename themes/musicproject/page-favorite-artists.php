@@ -4,6 +4,20 @@ $myArtists = new WP_Query([
     'post_type' => 'artist',
     'posts_per_page' => 15
 ]);
+
+$tabs = [
+    [
+        'title' => 'Uploaded Artists',
+        'description' => 'Your uploaded artists',
+        'slug' => 'favorite-artists',
+    ],
+    [
+        'title' => 'Saved Artists',
+        'description' => 'Artists saved from search',
+        'slug' => 'savedartist',
+    ],
+];
+
 ?>
 
 <div class="content-container">
@@ -18,7 +32,7 @@ $myArtists = new WP_Query([
         <div class="accordion-content">
             <form class="artist-form">
                 <div class="flex">
-                    <div class="max-w-full w-full mr-4">
+                    <div class="max-w-1/2 w-full mr-4">
                         <label for="title">
                             Name
                         </label>
@@ -30,7 +44,7 @@ $myArtists = new WP_Query([
                         <textarea name="artist_content" id="content" class="input h-[110px]" type="text"></textarea>
                     </div>
 
-                    <div class="max-w-full w-full">
+                    <div class="max-w-1/2 w-full">
                         <label for="image">
                             Image
                         </label>
@@ -66,8 +80,9 @@ $myArtists = new WP_Query([
             </form>
         </div>
     </div>
+
+    <?php get_template_part('template-parts/tab-items', null, ['tabs' => $tabs]); ?>
+    <?php get_template_part('template-parts/artists-grid', null, ['artists' => $myArtists]) ?>
 </div>
 
-<?php get_template_part('template-parts/my-artists', '', ['artists' => $myArtists, 'artists_type' => 'favorite']);
-
-get_footer(); ?>
+<?php get_footer(); ?>

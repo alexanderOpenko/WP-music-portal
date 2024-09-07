@@ -41,6 +41,10 @@ function checkArtistExisting(string $band): bool
 }
 
 function my_tags() {
+    if (!is_user_logged_in()) {
+        return [];
+    }
+
     $my_tags_post = new WP_Query([
         'author' => get_current_user_id(),
         'post_type' => 'usertags',
@@ -57,8 +61,12 @@ function my_tags() {
 
     return $my_tags;
 }
-
-function recomended_post_type(string $post_type, array $tags = []) {
+//add paged
+function recomended_post_type(int $posts_count, string $post_type, array $tags = [], int $paged = 1) {
+    if (empty($tags)) {
+        return new WP_Query();
+    }
+    
     $meta_query = ['relation' => 'OR'];
 
     foreach ($tags as $tag) {
@@ -73,65 +81,34 @@ function recomended_post_type(string $post_type, array $tags = []) {
         'post_type' => $post_type,
         // 'author__not_in' => [get_current_user_id()],
         'post_status' => 'publish',
+        'posts_per_page' => $posts_count,
         'meta_query' => $meta_query,
+        'paged' => $paged
     ]);
 
     return $recomended_posts;
 }
 
-function getMostPopular(int $posts_count, bool $load_artists = false, bool $load_songs = false): array {
-    $artists = null; 
-    $songs = null;
-    $artists_id = [];
-    $songs_id = [];
-
-    $songs_query = new WP_Query([
+function getMostPopularSongs(int $posts_count, int $paged = 1) {
+    return new WP_Query([
         'post_type' => 'song',
         'posts_per_page' => $posts_count,
         'meta_key' => 'play_count',
         'orderby' => 'meta_value_num',
         'order' => 'DESC',
+        'paged' => $paged
     ]);
-    
-    if (!$songs_query->found_posts) {
-        return [
-            'artists' => [],
-            'songs' => []
-        ];
-    }
-    
-    if ($songs_query->have_posts()) {
-        while ($songs_query->have_posts()) {
-            $songs_query->the_post();
-    
-            $artist_id = get_field('artist', get_the_ID())[0];
-    
-            if (!in_array($artist_id, $artists_id)) {
-                $artists_id[] = $artist_id;
-            }
-            $songs_id[] = get_the_ID();
-        }
-        wp_reset_postdata();
-    }
+}
 
-    if ($load_artists ) {
-        $artists = new WP_Query([
-            'post_type' => 'artist',
-            'post__in' => $artists_id,
-        ]);
-    }
-
-    if ($load_songs) {
-        $songs = new WP_Query([
-            'post_type' => 'song',
-            'post__in' => $songs_id,
-        ]);
-    }
-
-    return [
-        'artists' => $artists,
-        'songs' => $songs
-    ];
+function getMostPopularArtists(int $posts_count, int $paged = 1) {
+    return new WP_Query([
+        'post_type' => 'artist',
+        'posts_per_page' => $posts_count,
+        'meta_key' => 'play_count',
+        'orderby' => 'meta_value_num',
+        'order' => 'DESC',
+        'paged' => $paged
+    ]);
 }
 
 function update_artist_tags($data)

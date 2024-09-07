@@ -22,7 +22,7 @@ $uploaded_songs = new WP_Query([
             <div class="accordion-content">
                 <form class="song-form">
                     <div class="flex">
-                        <div class="max-w-full w-full mr-4">
+                        <div class="max-w-1/2 w-full mr-4">
                             <label for="title">
                                 Name
                             </label>
@@ -34,7 +34,7 @@ $uploaded_songs = new WP_Query([
                             <textarea name="content" id="content" class="input h-[110px]" type="text"></textarea>
                         </div>
 
-                        <div class="max-w-full w-full">
+                        <div class="max-w-1/2 w-full">
                             <label for="band">
                                 Band
                             </label>

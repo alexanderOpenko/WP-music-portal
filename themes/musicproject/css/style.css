@@ -16,6 +16,10 @@ a {
     text-decoration: none;
 }
 
+.half-space {
+  @apply md:w-5/12
+}
+
 .youtube-video iframe {
     height: 100%;
     width: 100%;
@@ -111,15 +115,15 @@ button[type="submit"] {
 }
 
 .tab {
-    @apply text-white bg-slate-400
+    @apply text-white bg-slate-900
 }
 
 .active {
-    @apply bg-slate-900 border-b-2 border-white;
+    @apply bg-red-600 border-b-2 border-white;
 }
 
 .tab:hover {
-    @apply bg-slate-300;
+    @apply bg-slate-500;
 }
 
 header .avatar {
@@ -389,3 +393,45 @@ button {
   .search-no-results {
     margin-top: 20px
   }
+
+
+.page-numbers {
+  display: inline-block;
+  padding: 10px 15px;
+  margin: 0 5px;
+  text-decoration: none;
+  font-size: 16px;
+  color: #007bff;
+  border: 1px solid #ddd;
+  border-radius: 5px;
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+.page-numbers:hover {
+  background-color: #007bff;
+  color: #fff;
+  border-color: #007bff;
+}
+
+.page-numbers.current {
+  background-color: #007bff;
+  color: #fff;
+  border-color: #007bff;
+  pointer-events: none;
+}
+
+.prev, .next {
+  font-weight: bold;
+  padding: 10px 20px;
+}
+
+.dots {
+  padding: 10px 15px;
+  color: #999;
+}
+
+.prev:hover, .next:hover {
+  background-color: #0056b3;
+  color: #fff;
+  border-color: #0056b3;
+}

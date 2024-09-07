@@ -6,7 +6,7 @@ while (have_posts()) {
   the_post();
   $post_id = get_the_id();
   $tag_ids = get_post_field('tag', '', false);
-  $artists = recomended_post_type('artist', $tag_ids);
+  $artists = recomended_post_type(6, 'artist', $tag_ids);
   $image_id = get_post_field('artist_image', get_field('artist')[0]);
   $image_url = get_post_image_custom($image_id, 'full');
   get_template_part('template-parts/banner', null, ['image_url' => $image_url, 'title' => 'play song', 'listens' => get_field('play_count')]);
@@ -22,10 +22,10 @@ while (have_posts()) {
 
     <div class="accordion-content invisible h-0">
       <form class="update-song-tag">
-        <input type="hidden" value="<?php echo $post_id ?>" name="post_id"/>
+        <input type="hidden" value="<?php echo $post_id ?>" name="post_id" />
         <?php get_template_part('template-parts/tag-field', null, ['tag_ids' => $tag_ids]) ?>
         <button class="mb-2" type="submit">
-            submit
+          submit
         </button>
       </form>
     </div>
@@ -39,7 +39,7 @@ while (have_posts()) {
     get_template_part('template-parts/song-item');
     wp_reset_postdata();
   ?>
-  <!-- template part -->
+    <!-- template part -->
     <?php if ($artists->have_posts()) : ?>
       <h1>
         Similar Artists

@@ -48,7 +48,7 @@ function createTag($data) {
         'meta_input' => $meta_input
       ], true);
 
-      updateUserTags($tag_id);
+      // updateUserTags($tag_id);
 
       $postQuery = new WP_query([
         'post_type' => 'musictag',

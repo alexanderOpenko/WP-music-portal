@@ -69,13 +69,13 @@
                     <a href="<?php echo wp_logout_url();  ?>" class="">
                         <span class="text-white">Log Out</span>
                     </a>
-                    <a href="<?php echo esc_url(site_url('/search')); ?>" class="js-search-trigger site-header__search-trigger">
-                        <i class="fa fa-search" aria-hidden="true"></i>
-                    </a>
-
                 <?php else : ?>
-                    <a href="<?php echo wp_login_url(); ?>" class="text-white">Login</a>
-                    <a href="<?php echo wp_registration_url(); ?>" class="text-white">Sign Up</a>
+                    <a href="<?php echo wp_login_url(); ?>" class="normal-link text-white">Login</a>
+                    <a href="<?php echo wp_registration_url(); ?>" class="normal-link text-white">Sign Up</a>
                 <?php endif; ?>
+
+                <a href="<?php echo esc_url(site_url('/search')); ?>" class="js-search-trigger site-header__search-trigger">
+                    <i class="fa fa-search" aria-hidden="true"></i>
+                </a>
             </div>
         </header>

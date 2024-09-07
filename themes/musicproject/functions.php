@@ -48,11 +48,63 @@ function delete_song_id_from_artist_on_song_delete($post_id)
     $artist_id = $artist_field[0];
     $songs = get_field('songs', $artist_id);
 
-    if (($key = array_search($post_id, $songs)) !== false) {
+    if (!empty($songs) && ($key = array_search($post_id, $songs)) !== false) {
       unset($songs[$key]);
       update_field('songs', $songs, $artist_id);
-      // Сбрасываем WP_Query
     }
   }
 }
 add_action('before_delete_post', 'delete_song_id_from_artist_on_song_delete');
+
+function delete_musictag_id_from_related_posts_on_delete($post_id) 
+{
+  if (get_post_type($post_id) == 'musictag') {
+    $args = [
+      'author' => get_current_user_id(),
+      'post_type' => ['artist', 'song'],
+      'posts_per_page' => -1,
+      'post_status' => 'publish'
+    ];
+    $related_posts = get_posts($args);
+
+    foreach ($related_posts as $post) {
+      $musictags = get_field('tag', $post->ID);
+
+      if (is_array($musictags) && ($key = array_search($post_id, $musictags)) !== false) {
+        unset($musictags[$key]); 
+        $musictags = array_values($musictags); 
+        update_field('tag', $musictags, $post->ID); 
+      } 
+    }
+  }
+}
+
+add_action('before_delete_post', 'delete_musictag_id_from_related_posts_on_delete');
+
+function delete_songs_when_artist_is_deleted($post_id) 
+{
+  if (get_post_type($post_id) == 'artist') {
+    $args = [
+      'post_type' => 'song',
+      'posts_per_page' => -1,
+      'post_status' => 'publish',
+      'meta_query' => [
+        'relation' => 'OR',
+        [
+          'key' => 'artist', 
+          'value' => $post_id,
+          'compare' => 'LIKE' 
+        ]
+      ]
+    ];
+    
+    $songs = get_posts($args);
+
+    foreach ($songs as $song) {
+      wp_delete_post($song->ID, true); // Delete each song
+    }
+  }
+}
+
+add_action('before_delete_post', 'delete_songs_when_artist_is_deleted');
+
