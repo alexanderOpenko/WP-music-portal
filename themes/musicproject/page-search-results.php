@@ -14,10 +14,7 @@ $search_query = new WP_Query([
 echo '<div class="content-container">';
 
 if ($type === 'song' && $search_query->found_posts) {
-    while ($search_query->have_posts()) {
-        $search_query->the_post();
-        get_template_part('template-parts/song-item');
-    }
+    get_template_part('template-parts/songs-list', null, ['songs' => $search_query]);
 }
 
 if ($type === 'artist' && $search_query->found_posts) {

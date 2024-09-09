@@ -8,7 +8,25 @@ while (have_posts()) :
     $tag_ids = get_field('tag', $ID, false);
     $image_url = get_post_image_custom(get_field('artist_image'), 'full');
     $song_ids = get_field('songs') ? get_field('songs', '', false) : [];
-    get_template_part('template-parts/banner', null, ['image_url' => $image_url, 'title' => 'play artist'])
+    get_template_part('template-parts/banner', null, ['image_url' => $image_url, 'title' => 'play artist']);
+
+    // $my_saved_artists = my_saved_items('artist', 'artist')['my_items_ids'];
+    // $is_saved_song = false;
+
+    // if (in_array(get_the_id(), $my_saved_artists)) {
+    //     $is_saved_song = true;
+    // }
+
+    // $save_icon_args = [
+    //     'action' => 'save',
+    //     'post_id' => get_the_id(),
+    //     'type' => 'songs'
+    // ];
+
+    // if ($is_saved_song) {
+    //     $save_icon_args['action'] = 'unsave';
+    //     $save_icon_args['btn_class'] = 'saved-song'; 
+    // }
 ?>
 
 <?php endwhile;
@@ -46,7 +64,7 @@ wp_reset_postdata();
     </div>
 
     <?php get_template_part('template-parts/tags-list', null, ['tag_ids' => $tag_ids]) ?>
-    <?php get_template_part('template-parts/songs-list', null, ['song_ids' => $song_ids, 'data_attribute' => 'data-tag']) ?>
+    <?php get_template_part('template-parts/songs-list-by-id', null, ['song_ids' => $song_ids, 'data_attribute' => 'data-tag']) ?>
 </div>
 
 <?php get_footer(); ?>

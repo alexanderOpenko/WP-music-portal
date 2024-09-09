@@ -58,15 +58,14 @@ jQuery(document).ready(function ($) {
             deleteContentHandler($(this))
         })
 
-        $(document).on('submit', '.save-song-form', function (e) {
-            saveSongSubmitHandler(e, $(this))
+        $(document).on('submit', '.save-icon-form', function (e) {
+            saveSubmitHandler(e, $(this))
         })
-        // initSelectizeTags()
 
         $.data(document, 'eventsHandlerAttached', true);
     }
 
-    async function saveSongSubmitHandler(e, form) {
+    async function saveSubmitHandler(e, form) {
         e.preventDefault()
         const data = new FormData(form[0])
         const bookmarkBtn = form.find('.save-icon-btn')

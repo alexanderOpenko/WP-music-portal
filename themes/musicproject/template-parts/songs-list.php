@@ -1,37 +1,26 @@
 <?php
-$song_ids = $args['song_ids'];
+$my_saved_songs = my_saved_items('songs', 'song')['my_items_ids'];
+$is_saved_song = false;
 
-if (count($song_ids)) :
-    $limited_song_ids = array_slice($song_ids, 0, 10);
+$save_icon_args = [
+    'action' => 'save',
+    'type' => 'songs'
+];
 
-    $uploaded_songs = new WP_Query([
-        'post_type' => 'song',
-        'post__in' => $limited_song_ids,
-    ]); ?>
+while ($args['songs']->have_posts()) {
+    $args['songs']->the_post();
+    $save_icon_args['post_id'] = get_the_id();
 
-    <h2 class="mb-[15px]">
-        Tracklist
-    </h2>
+    if (in_array(get_the_id(), $my_saved_songs)) {
+        $is_saved_song = true;
+    }
 
-    <div class="favsongs-page-list">
-        <?php while ($uploaded_songs->have_posts()) :
-            $uploaded_songs->the_post();
-            get_template_part('template-parts/song-item');
-        endwhile;
-        wp_reset_postdata(); ?>
-    </div>
+    if ($is_saved_song) {
+        $save_icon_args['action'] = 'unsave';
+        $save_icon_args['btn_class'] = 'saved-song';
+    }
 
-    <?php if (count($song_ids) > 10) : ?>
-        <div class="upload-song-page-js cursor-pointer" 
-        <?php echo $args['data_attribute'] . '=' . get_the_ID() ?> 
-        data-page=2 
-        data-max-pages="<?php echo $uploaded_songs->max_num_pages ?>"
-        >
-            view more
-        </div>
-    <?php endif ?>
-<?php else : ?>
-    <div>
-        Please <a class="ajax-link" href="<?php echo home_url('/favorite-songs') ?>"> create songs </a> with this artist name
-    </div>
-<?php endif ?>
+    get_template_part('template-parts/song-item', null, ['save_icon_args' => $save_icon_args]);
+}
+
+wp_reset_postdata();

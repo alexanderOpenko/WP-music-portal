@@ -23,6 +23,10 @@
                     <div>
                         <?php echo $args['listens']; ?>
                     </div>
+
+                    <div>
+                        <?php get_template_part('template-parts/save-icon', null, $args['save_icon_args']); ?>
+                    </div>
                 </div>
             <?php endif ?>
         </div>

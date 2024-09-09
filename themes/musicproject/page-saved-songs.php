@@ -1,6 +1,6 @@
 <?php
 get_header();
-$saved_songs = my_saved_songs()['saved_songs'];
+$saved_songs = my_saved_items('songs', 'song')['saved_items'];
 
 $tabs = [
     [
@@ -35,13 +35,7 @@ $tabs = [
             </h2>
 
             <div>
-                <div class="favsongs-page-list">
-                    <?php while ($saved_songs->have_posts()) {
-                        $saved_songs->the_post();
-                        get_template_part('template-parts/song-item');
-                    }
-                    ?>
-                </div>
+                <?php get_template_part('template-parts/songs-list', null, ['songs' => $saved_songs]); ?>
             </div>
         </div>
     <?php endif ?>

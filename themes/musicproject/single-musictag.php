@@ -37,7 +37,7 @@ while (have_posts()) :
       <?php the_content(); ?>
     </div>
   <?php endif ?>
-  <?php get_template_part('template-parts/songs-list', null, ['song_ids' => $song_ids, 'data_attribute' => 'data-tag']) ?>
+  <?php get_template_part('template-parts/songs-list-by-id', null, ['song_ids' => $song_ids, 'data_attribute' => 'data-tag']) ?>
 </div>
 <?php
 get_footer();

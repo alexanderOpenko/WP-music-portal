@@ -53,13 +53,13 @@ function checkArtistExisting(string $band): bool
     return $query->found_posts == 0 ? false : true;
 }
 
-function my_saved_songs() {
+function my_saved_items(string $field_type, string $post_type) {
     if (!is_user_logged_in()) {
         return [];
     }
 
     // Получаем ID первого поста 'usermeta' автора
-    $my_songs_post_id = get_posts([
+    $my_items_post_id = get_posts([
         'author' => get_current_user_id(),
         'post_type' => 'usermeta',
         'post_status' => 'publish',
@@ -68,19 +68,19 @@ function my_saved_songs() {
     ]);
 
     // Извлекаем сохранённые ID песен, если пост найден
-    $my_songs_ids = !empty($my_songs_post_id) ? get_field('songs', $my_songs_post_id[0], false) : [];
+    $my_items_ids = !empty($my_items_post_id) ? array_values(get_field($field_type, $my_items_post_id[0])) : [];
 
-    $saved_songs = null;
-    if (!empty($my_songs_ids)) {
-        $saved_songs = new WP_Query([
-            'post_type' => 'song',
-            'post__in' => $my_songs_ids
+    $saved_items = null;
+    if (!empty($my_items_ids)) {
+        $saved_items = new WP_Query([
+            'post_type' => $post_type,
+            'post__in' => $my_items_ids
         ]);
     }
 
     return [
-        'my_songs_ids' => $my_songs_ids,
-        'saved_songs' => $saved_songs,
+        'my_items_ids' => $my_items_ids,
+        'saved_items' => $saved_items,
     ];
 }
 
@@ -183,7 +183,7 @@ function update_artist_tags($data)
     ];
 }
 
-function updateUserSavedSongs(array|int|string $song_id, string $action) {
+function updateUserSavedItems(array|int|string $item_id, string $action, string $post_type) {
     $query = new WP_Query([
         'author' => get_current_user_id(),
         'post_type' => 'usermeta',
@@ -197,9 +197,9 @@ function updateUserSavedSongs(array|int|string $song_id, string $action) {
         wp_reset_postdata();
 
         if ($action === 'save') {
-            add_value_to_field('songs', $song_id, $post_id);
+            add_value_to_field($post_type, $item_id, $post_id);
         } else {
-            remove_value_from_field('songs', $song_id, $post_id);
+            remove_value_from_field($post_type, $item_id, $post_id);
         }
     } else {
         wp_insert_post([
@@ -208,7 +208,7 @@ function updateUserSavedSongs(array|int|string $song_id, string $action) {
             'post_title' => wp_get_current_user()->nickname,
             'meta_input' => [
                 'user' => get_current_user_id(),
-                'songs' => [$song_id]
+                $post_type => [$item_id]
             ]
         ]);
     }

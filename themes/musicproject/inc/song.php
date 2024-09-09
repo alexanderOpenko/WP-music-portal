@@ -19,7 +19,7 @@ function manageSong()
 }
 
 function saveSong($data) {
-    updateUserSavedSongs($data['post_id'], $data['action']);
+    updateUserSavedItems($data['post_id'], $data['action'], $data['type']);
 
     return new WP_REST_Response([null, 200]);
 }

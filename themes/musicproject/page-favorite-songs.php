@@ -94,12 +94,7 @@ $tabs = [
 
         <div>
             <div class="favsongs-page-list">
-                <?php while ($uploaded_songs->have_posts()) {
-                    $uploaded_songs->the_post();
-                    
-                    get_template_part('template-parts/song-item');
-                }
-                ?>
+                <?php get_template_part('template-parts/songs-list', null, ['songs' => $uploaded_songs]); ?>
             </div>
 
             <?php if ($uploaded_songs->found_posts > 15): ?>
