@@ -7,9 +7,22 @@ $uploaded_songs = new WP_Query([
     'posts_per_page' => 15,
     'paged' => get_query_var('paged') ?: 1
 ]);
+
+$tabs = [
+    [
+        'title' => 'Uploaded songs',
+        'slug' => 'favorite-songs',
+    ],
+    [
+        'title' => 'Saved song',
+        'slug' => 'saved-songs',
+    ],
+];
 ?>
 
 <div class="content-container">
+    <?php get_template_part('template-parts/tab-items', null, ['tabs' => $tabs]); ?>
+
     <div>
         <div class="accordion">
             <div class="flex justify-between items-center">
@@ -83,6 +96,7 @@ $uploaded_songs = new WP_Query([
             <div class="favsongs-page-list">
                 <?php while ($uploaded_songs->have_posts()) {
                     $uploaded_songs->the_post();
+                    
                     get_template_part('template-parts/song-item');
                 }
                 ?>

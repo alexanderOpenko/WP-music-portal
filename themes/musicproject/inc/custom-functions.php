@@ -27,6 +27,19 @@ function add_value_to_field(string $field_key, mixed $value, int $post_id): void
     update_post_meta($post_id, $field_key, $field);
 }
 
+function remove_value_from_field(string $field_key, mixed $value, int $post_id): void
+{
+    $field = get_field($field_key, $post_id) ?: [];
+
+    if (is_array($value)) {
+        $field = array_diff($field, $value);
+    } else {
+        $field = array_diff($field, [$value]);
+    }
+
+    update_post_meta($post_id, $field_key, $field);
+}
+
 function checkArtistExisting(string $band): bool
 {
     $query = new WP_Query([
@@ -40,6 +53,37 @@ function checkArtistExisting(string $band): bool
     return $query->found_posts == 0 ? false : true;
 }
 
+function my_saved_songs() {
+    if (!is_user_logged_in()) {
+        return [];
+    }
+
+    // Получаем ID первого поста 'usermeta' автора
+    $my_songs_post_id = get_posts([
+        'author' => get_current_user_id(),
+        'post_type' => 'usermeta',
+        'post_status' => 'publish',
+        'fields' => 'ids',
+        'posts_per_page' => 1
+    ]);
+
+    // Извлекаем сохранённые ID песен, если пост найден
+    $my_songs_ids = !empty($my_songs_post_id) ? get_field('songs', $my_songs_post_id[0], false) : [];
+
+    $saved_songs = null;
+    if (!empty($my_songs_ids)) {
+        $saved_songs = new WP_Query([
+            'post_type' => 'song',
+            'post__in' => $my_songs_ids
+        ]);
+    }
+
+    return [
+        'my_songs_ids' => $my_songs_ids,
+        'saved_songs' => $saved_songs,
+    ];
+}
+
 function my_tags() {
     if (!is_user_logged_in()) {
         return [];
@@ -47,7 +91,7 @@ function my_tags() {
 
     $my_tags_post = new WP_Query([
         'author' => get_current_user_id(),
-        'post_type' => 'usertags',
+        'post_type' => 'usermeta',
         'post_status' => 'publish',
     ]);
     
@@ -59,7 +103,7 @@ function my_tags() {
         $my_tags = get_post_field('tag', $my_tags_post_id);
     }
 
-    return $my_tags;
+    return $my_tags !== '' ? $my_tags : [];
 }
 //add paged
 function recomended_post_type(int $posts_count, string $post_type, array $tags = [], int $paged = 1) {
@@ -139,12 +183,45 @@ function update_artist_tags($data)
     ];
 }
 
+function updateUserSavedSongs(array|int|string $song_id, string $action) {
+    $query = new WP_Query([
+        'author' => get_current_user_id(),
+        'post_type' => 'usermeta',
+        'post_status' => 'publish',
+        'posts_per_page' => 1
+    ]);
+
+    if ($query->have_posts()) {
+        $query->the_post();
+        $post_id = get_the_ID();
+        wp_reset_postdata();
+
+        if ($action === 'save') {
+            add_value_to_field('songs', $song_id, $post_id);
+        } else {
+            remove_value_from_field('songs', $song_id, $post_id);
+        }
+    } else {
+        wp_insert_post([
+            'post_type' => 'usermeta',
+            'post_status' => 'publish',
+            'post_title' => wp_get_current_user()->nickname,
+            'meta_input' => [
+                'user' => get_current_user_id(),
+                'songs' => [$song_id]
+            ]
+        ]);
+    }
+
+    return true;
+}
+
 function updateUserTags(array|int|string $tags) {
     $post_id = 0;
 
     $query = new WP_Query([
         'author' => get_current_user_id(),
-        'post_type' => 'usertags',
+        'post_type' => 'usermeta',
         'post_status' => 'publish',
         'posts_per_page' => 1
     ]);
@@ -156,7 +233,7 @@ function updateUserTags(array|int|string $tags) {
         add_value_to_field('tag', explode(',', $tags), $post_id);
     } else {
         wp_insert_post([
-            'post_type' => 'usertags',
+            'post_type' => 'usermeta',
             'post_status' => 'publish',
             'post_title' => wp_get_current_user()->nickname,
             'meta_input' => [

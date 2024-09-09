@@ -57,9 +57,45 @@ jQuery(document).ready(function ($) {
         $(document).on('click', '.delete-song', function () {
             deleteContentHandler($(this))
         })
+
+        $(document).on('submit', '.save-song-form', function (e) {
+            saveSongSubmitHandler(e, $(this))
+        })
         // initSelectizeTags()
 
         $.data(document, 'eventsHandlerAttached', true);
+    }
+
+    async function saveSongSubmitHandler(e, form) {
+        e.preventDefault()
+        const data = new FormData(form[0])
+        const bookmarkBtn = form.find('.save-icon-btn')
+        const action = data.get('action')
+
+        try {
+            const resp = await fetch(musicData.root_url + "/wp-json/music/v1/saveSong", {
+                method: 'POST',
+                body: data,
+                headers: {
+                    "X-WP-Nonce": musicData.nonce,
+                }
+            });
+            const json = await resp.json();
+
+            if (!resp.ok) {
+                throw new Error(json.message);
+            } else {
+                if (action === 'save') {
+                    bookmarkBtn.addClass('saved-song')
+                    form.find('input[name="action"]').val('unsave')
+                } else {
+                    bookmarkBtn.removeClass('saved-song')
+                    form.find('input[name="action"]').val('save')
+                }
+            }
+        } catch (error) {
+           alert(error)
+        }
     }
 
     async function deleteContentHandler(target) {
@@ -81,13 +117,13 @@ jQuery(document).ready(function ($) {
                 if (window.location.pathname.includes(contentName.replace(' ', '-'))) {
                     window.history.back()
                 }
-                
+
                 if (target.closest('.song-item')) {
                     target.closest('.song-item').remove()
                 }
             } catch (e) {
                 console.log(e);
-                
+
                 alert('Something went wrong')
             }
         }
@@ -283,7 +319,7 @@ jQuery(document).ready(function ($) {
             });
             const json = await resp.json();
             console.log(json, 'json');
-            
+
             if (!resp.ok) {
                 throw new Error(json.message);
             } else {
@@ -302,7 +338,7 @@ jQuery(document).ready(function ($) {
     function ajaxLinkHandler(e, target, urlParam = null, isPopState = false) {
         if (target && target.hasClass('normal-link')) {
             return
-        }        
+        }
 
         if (target && window.location.href == target.attr('href')) {
             e.preventDefault()

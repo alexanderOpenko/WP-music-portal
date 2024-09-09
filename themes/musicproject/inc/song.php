@@ -11,6 +11,17 @@ function manageSong()
         'methods' => 'GET',
         'callback' => 'updatePlayCount'
     ]);
+
+    register_rest_route('music/v1/', 'saveSong', [
+        'methods' => 'POST',
+        'callback' => 'saveSong'
+    ]);
+}
+
+function saveSong($data) {
+    updateUserSavedSongs($data['post_id'], $data['action']);
+
+    return new WP_REST_Response([null, 200]);
 }
 
 function updatePlayCount($data) {
