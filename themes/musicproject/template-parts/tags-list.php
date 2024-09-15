@@ -24,7 +24,7 @@ if (count($tag_ids)):
                 <button class="tag-button mr-3">
                     <?php the_title(); ?>
                 </button>
-            <?php endwhile ?>
+            <?php endwhile; wp_reset_postdata() ?>
 
             <?php if (count($tag_ids) > 4): ?>
                 <?php get_template_part('template-parts/single-accordion-button') ?>
@@ -32,14 +32,14 @@ if (count($tag_ids)):
         </div>
 
         <?php if ($remaining_tags->have_posts()): ?>
-            <div class="flex mt-4 accordion-content hidden">
+            <div class="flex mt-4 accordion-content invisible">
                 <?php while ($remaining_tags->have_posts()):
                     $remaining_tags->the_post();
                 ?>
                     <button class="tag-button mr-3">
                         <?php the_title(); ?>
                     </button>
-                <?php endwhile ?>
+                <?php endwhile; wp_reset_postdata()?>
             </div>
         <?php endif; ?>
     </div>

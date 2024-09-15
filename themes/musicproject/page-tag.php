@@ -1,6 +1,9 @@
 <?php
 get_header();
 
+require get_theme_file_path('inc/tags-tabs-links.php');
+$tabs = TAG_TABS;
+
 $userTags = new WP_Query([
     "author" => get_current_user_id(),
     "post_type" => "musictag",
@@ -8,11 +11,13 @@ $userTags = new WP_Query([
 ?>
 
 <div class="content-container">
+    <?php get_template_part('template-parts/tab-items', null, ['tabs' => $tabs]); ?>
+
     <p>
         Help categorize and classify the music on our site by creating global tags. These tags will be used to describe songs, albums, and bands, making it easier for everyone to discover and explore music.
     </p>
 
-    <div class="md-content-centered p-[10px]">
+    <div class="p-[10px]">
         <div class="accordion">
             <div class="flex justify-between items-center">
                 <h3>
@@ -23,28 +28,35 @@ $userTags = new WP_Query([
 
             <div class="accordion-content">
                 <form class="tag-form">
-                    <label for="title">
-                        Title
-                    </label>
-                    <input name="title" required class="input" type="text" id="title" />
+                    <div class="flex">
+                        <div class="max-w-1/2 w-full mr-4">
+                            <label for="title">
+                                Title
+                            </label>
+                            <input name="title" required class="input" type="text" id="title" />
 
-                    <label for="content">
-                        Content
-                    </label>
-                    <textarea name="content" id="content" class="input h-[150px]" type="text"></textarea>
+                            <label for="content">
+                                Content
+                            </label>
+                            <textarea name="content" id="content" class="input h-[150px]" type="text"></textarea>
+                        </div>
 
-                    <label for="image">
-                        Image
-                    </label>
-                    <?php get_template_part('template-parts/upload-button', null, ['image_name' => 'image_tag']);
-                    get_template_part('template-parts/image-holder');
-                    ?>
+                        <div class="max-w-1/2 w-full">
 
-                    <button class="mb-2" type="submit">
-                        submit
-                    </button>
+                            <label for="image">
+                                Image
+                            </label>
+                            <?php get_template_part('template-parts/upload-button', null, ['image_name' => 'image_tag']);
+                            get_template_part('template-parts/image-holder');
+                            ?>
 
-                    <div class="message-field">
+                            <button class="mb-2" type="submit">
+                                submit
+                            </button>
+
+                            <div class="message-field">
+                            </div>
+                        </div>
                     </div>
                 </form>
             </div>

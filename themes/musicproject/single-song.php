@@ -9,7 +9,26 @@ while (have_posts()) {
   $artists = recomended_post_type(6, 'artist', $tag_ids);
   $image_id = get_post_field('artist_image', get_field('artist')[0]);
   $image_url = get_post_image_custom($image_id, 'full');
-  get_template_part('template-parts/banner', null, ['image_url' => $image_url, 'title' => 'play song', 'listens' => get_field('play_count')]);
+
+  $my_saved_songs = my_saved_items('songs', 'song')['my_items_ids'];
+  $is_saved_song = false;
+
+  if (in_array(get_the_id(), $my_saved_songs)) {
+    $is_saved_song = true;
+  }
+
+  $save_icon_args = [
+    'action' => 'save',
+    'post_id' => get_the_id(),
+    'type' => 'songs'
+  ];
+
+  if ($is_saved_song) {
+    $save_icon_args['action'] = 'unsave';
+    $save_icon_args['btn_class'] = 'saved-song';
+  }
+
+  get_template_part('template-parts/banner', null, ['image_url' => $image_url, 'title' => 'play song', 'listens' => get_field('play_count'), 'save_icon_args' => $save_icon_args]);
   wp_reset_postdata();
 }
 ?>
@@ -24,7 +43,7 @@ while (have_posts()) {
       <form class="update-song-tag">
         <input type="hidden" value="<?php echo $post_id ?>" name="post_id" />
         <?php get_template_part('template-parts/tag-field', null, ['tag_ids' => $tag_ids]) ?>
-        <button class="mb-2" type="submit">
+        <button class="mb-2 update-tag-button" type="submit">
           submit
         </button>
       </form>
@@ -33,21 +52,15 @@ while (have_posts()) {
 
   <?php
   get_template_part('template-parts/tags-list', null, ['tag_ids' => $tag_ids]);
-
-  while (have_posts()) :
-    the_post();
-    get_template_part('template-parts/song-item');
-    wp_reset_postdata();
+  get_template_part('template-parts/song-item', null, ['save_icon_args' => $save_icon_args]);
   ?>
-    <!-- template part -->
-    <?php if ($artists->have_posts()) : ?>
-      <h1>
-        Similar Artists
-      </h1>
 
-      <?php get_template_part('template-parts/artists-grid', null, ['artists' => $artists]) ?>
-    <?php endif ?>
-  <?php endwhile ?>
+  <?php if ($artists->have_posts()) : ?>
+    <?php get_template_part('template-parts/artists-grid', null, [
+      'artists' => $artists,
+      'title' => 'Similar artists'
+      ]) ?>
+  <?php endif ?>
 </div>
 
 <?php get_footer(); ?>

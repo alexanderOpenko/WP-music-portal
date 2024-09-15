@@ -107,7 +107,8 @@ img {
 }
 
 button[type="submit"] {
-    @apply submit-button mt-4
+    @apply submit-button mt-4;
+    z-index: 100;
 }
 
 .tag-button {
@@ -253,6 +254,13 @@ button {
     position: relative;
     top: unset!important;
     left: unset!important;
+    max-width: 500px;
+    width: 100%!important;
+}
+
+.selectize-input {
+  max-width: 500px;
+    width: 100%!important;
 }
 
 /* search */

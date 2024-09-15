@@ -1,5 +1,9 @@
 <?php
 get_header();
+
+require get_theme_file_path('inc/songs-tabs-links.php');
+$tabs = SONGS_TABS_LINKS;
+
 $uploaded_songs = new WP_Query([
     'author' => get_current_user_id(),
     'post_type' => 'song',
@@ -7,17 +11,6 @@ $uploaded_songs = new WP_Query([
     'posts_per_page' => 15,
     'paged' => get_query_var('paged') ?: 1
 ]);
-
-$tabs = [
-    [
-        'title' => 'Uploaded songs',
-        'slug' => 'favorite-songs',
-    ],
-    [
-        'title' => 'Saved song',
-        'slug' => 'saved-songs',
-    ],
-];
 ?>
 
 <div class="content-container">
@@ -98,7 +91,10 @@ $tabs = [
             </div>
 
             <?php if ($uploaded_songs->found_posts > 15): ?>
-                <div class="upload-song-page-js cursor-pointer" data-page=2 data-max-pages="<?php echo $uploaded_songs->max_num_pages ?>">
+                <div class="upload-song-page-js cursor-pointer" 
+                data-page=2 
+                data-max-pages="<?php echo $uploaded_songs->max_num_pages ?>"
+                >
                     view more
                 </div>
             <?php endif ?>

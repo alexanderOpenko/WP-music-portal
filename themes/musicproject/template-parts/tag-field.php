@@ -31,8 +31,8 @@ $tags = new WP_Query([
 ]);
 ?>
 
-<div class="mb-[15px] tags-select-wrapper">
-    <select multiple name="tags" class="input !mb-0" type="text" id="tags-select" data-default-tags='<?php echo json_encode($default_tags) ?>'>
+<div class="mb-[15px] tags-select-wrapper w-full">
+    <select multiple name="tags[]" class="input !mb-0" type="text" id="tags-select" data-default-tags='<?php echo json_encode($default_tags) ?>'>
         <?php while ($tags->have_posts()) :
             $tags->the_post() ?>
             <option <?php echo isset($args['tag_ids']) && in_array(get_the_ID(), $args['tag_ids']) ? 'selected=true' : '' ?> value="<?php echo get_the_ID() ?>"><?php the_title() ?></option>

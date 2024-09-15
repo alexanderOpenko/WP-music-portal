@@ -5,22 +5,13 @@ $myArtists = new WP_Query([
     'posts_per_page' => 15
 ]);
 
-$tabs = [
-    [
-        'title' => 'Uploaded Artists',
-        'description' => 'Your uploaded artists',
-        'slug' => 'favorite-artists',
-    ],
-    [
-        'title' => 'Saved Artists',
-        'description' => 'Artists saved from search',
-        'slug' => 'savedartist',
-    ],
-];
-
+require get_theme_file_path('inc/artists-tabs-links.php');
+$tabs = ARTIST_TABS;
 ?>
 
 <div class="content-container">
+    <?php get_template_part('template-parts/tab-items', null, ['tabs' => $tabs]); ?>
+
     <div class="accordion">
         <div class="flex justify-between items-center">
             <h3>
@@ -59,9 +50,9 @@ $tabs = [
                             <div class="accordion-content invisible h-0">
                                 <label for="tags-select">
                                     <span>
-                                        Search for existing tags or create your own. If no suitable tags are found, you can create new ones on the <a class="ajax-link" href="<?php echo site_url('/tag/')?>">
+                                        Search for existing tags or create your own. If no suitable tags are found, you can create new ones on the <a class="ajax-link" href="<?php echo site_url('/tag/') ?>">
                                             tags page
-                                            </a>                                    
+                                        </a>
                                     </span>
                                 </label>
 
@@ -81,8 +72,20 @@ $tabs = [
         </div>
     </div>
 
-    <?php get_template_part('template-parts/tab-items', null, ['tabs' => $tabs]); ?>
-    <?php get_template_part('template-parts/artists-grid', null, ['artists' => $myArtists]) ?>
+    <?php if ($myArtists->found_posts) : ?>
+        <?php get_template_part('template-parts/artists-grid', null, [
+            'artists' => $myArtists,
+            'title' => 'uploaded songs'
+        ]) ?>
+    <?php endif ?>
+
+    <?php if ($myArtists->found_posts > 15): ?>
+        <div class="upload-artist-page-js cursor-pointer"
+            data-page=2
+            data-max-pages="<?php echo $myArtists->max_num_pages ?>">
+            view more
+        </div>
+    <?php endif ?>
 </div>
 
 <?php get_footer(); ?>

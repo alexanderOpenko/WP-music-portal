@@ -1,3 +1,7 @@
+<h2>
+    <?php echo $args['title'] ?>
+</h2>
+
 <div class="card-list artists-list cards-container">
     <?php while ($args['artists']->have_posts()) :
         $args['artists']->the_post();

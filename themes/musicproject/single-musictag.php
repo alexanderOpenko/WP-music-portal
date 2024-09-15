@@ -19,7 +19,25 @@ while (have_posts()) :
   the_post();
   $image_url = get_post_image_custom(get_field('tag_image'), 'full');
 
-  get_template_part('template-parts/banner', null, ['image_url' => $image_url, 'title' => 'play tag']); ?>
+  $my_saved_tags = my_saved_items('tag', 'musictag', 1, -1)['my_items_ids'];
+  $is_saved_tag = false;
+
+  if (in_array(get_the_id(), $my_saved_tags)) {
+      $is_saved_tag = true;
+  }
+
+  $save_icon_args = [
+      'action' => 'save',
+      'post_id' => get_the_id(),
+      'type' => 'tag'
+  ];
+
+  if ($is_saved_tag) {
+      $save_icon_args['action'] = 'unsave';
+      $save_icon_args['btn_class'] = 'saved-song';
+  }
+
+  get_template_part('template-parts/banner', null, ['image_url' => $image_url, 'title' => 'play tag', 'save_icon_args' => $save_icon_args]); ?>
 <?php endwhile ?>
 
 <div class="content-container">       

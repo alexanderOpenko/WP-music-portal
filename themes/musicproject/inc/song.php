@@ -16,6 +16,27 @@ function manageSong()
         'methods' => 'POST',
         'callback' => 'saveSong'
     ]);
+
+    register_rest_route('music/v1/', 'savedSongsPaginations', [
+        'methods' => 'GET',
+        'callback' => 'getSavedSongs'
+    ]);
+}
+
+function getSavedSongs($data) {
+    $saved_songs = my_saved_items('songs', 'song', $data['page'], 15)['saved_items'];
+
+    $songs = array_map(function($post) {
+        return [
+            'ID' => $post->ID,
+            'song_link' => get_field('song_link', $post->ID)['url'],
+            'band' => get_field('band', $post->ID),
+            'link' => get_permalink($post->ID),
+            'title' => $post->post_title
+        ];
+    },$saved_songs->posts);
+
+    return new WP_REST_Response(['posts' => $songs], 200);
 }
 
 function saveSong($data) {
@@ -66,7 +87,7 @@ function createSong($data)
             'post_content' => $data['content'],
             'meta_input' => [
                 'artist' => [$artist_id],
-                'tag' => explode(',', $data['tags']),
+                'tag' => $data['tags'],
                 'song_link' => ['url' => $data['song_link']],
                 'band' => $data['band']
             ]

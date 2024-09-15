@@ -34,6 +34,18 @@ jQuery(document).ready(function ($) {
             handleUploadedSongs($(this))
         })
 
+        $(document).on('click', '.upload-artist-page-js', function (e) {
+            handleUploadedArtists($(this))
+        })
+
+        $(document).on('click', '.artists-page-js', function (e) {
+            handleAllArtists($(this))
+        })
+        
+        $(document).on('click', '.tags-page-js', function (e) {
+            handleAlltags($(this))
+        })
+
         $(document).on('click', '.play-first-artist-song-js', function (e) {
             playFirstArtistSong($(this))
         })
@@ -60,6 +72,10 @@ jQuery(document).ready(function ($) {
 
         $(document).on('submit', '.save-icon-form', function (e) {
             saveSubmitHandler(e, $(this))
+        })
+
+        $(document).on('click', '.paginate-saved-content-js', function (e) {
+            handleSavedContentPagination($(this))
         })
 
         $.data(document, 'eventsHandlerAttached', true);
@@ -93,7 +109,7 @@ jQuery(document).ready(function ($) {
                 }
             }
         } catch (error) {
-           alert(error)
+            alert(error)
         }
     }
 
@@ -171,7 +187,7 @@ jQuery(document).ready(function ($) {
                 $content.find('.accordion').hide();
             } else {
                 element.addClass('visible').removeClass('invisible');
-                element.animate({ height: element.get(0).scrollHeight }, duration, function () {
+                element.animate({ height: '100%' }, duration, function () {
                     target.find('.button-open-text').hide();
                     target.find('.button-close-text').show();
                     $content.find('.accordion').show();
@@ -287,6 +303,7 @@ jQuery(document).ready(function ($) {
     }
 
     async function submitUpdateTag(e, form) {
+        e.preventDefault()
         const data = new FormData(form[0]);
 
         try {
@@ -297,8 +314,12 @@ jQuery(document).ready(function ($) {
                     "X-WP-Nonce": musicData.nonce,
                 }
             });
-        } catch {
-            alert('something went wrong')
+
+            if (resp.ok) {
+                window.location.reload()
+            }
+        } catch (e) {
+            console.log(e);
         }
     }
 
@@ -362,20 +383,164 @@ jQuery(document).ready(function ($) {
         });
     }
 
+    async function handleSavedContentPagination(target) {
+        let url
+        const $pageData = parseInt(target.attr('data-page'))
+        const $maxPages = target.attr('data-max-pages')
+
+        if (target.data('type') == 'saved-artists') {
+            url = musicData.root_url + `/wp-json/music/v1/artistsPaginations?page=${$pageData}`
+        }
+
+        if (target.data('type') == 'saved-songs') {
+            url = musicData.root_url + `/wp-json/music/v1/savedSongsPaginations?page=${$pageData}`
+        }
+
+        if (target.data('type') == 'saved-tags') {
+            url = musicData.root_url + `/wp-json/music/v1/savedTagsPaginations?page=${$pageData}`
+        }
+
+        try {
+            const resp = await fetch(url, {
+                headers: {
+                    "X-WP-Nonce": musicData.nonce,
+                }
+            })
+            const json = await resp.json();
+
+            if (!resp.ok) {
+                throw new Error()
+            } else {
+                if (target.data('type') == 'saved-artists' || target.data('type') == 'saved-tags') {
+                    const container = $('.card-list')
+
+                    json.posts.forEach(post => {
+                        container.append(baseCardNode(post))
+                    })
+                }
+
+                if (target.data('type') == 'saved-songs') {
+                    const container = $('.songs-list')
+
+                    json.posts.forEach(post => {
+                        container.append(songNode(post))
+                    })
+                }
+
+                if ($pageData >= $maxPages) {
+                    target.hide()
+                }
+
+                target.attr('data-page', $pageData + 1);
+            }
+        } catch {
+            alert('Something went wrong')
+        }
+    }
+
+    async function handleUploadedArtists(target) {
+        const $maxPages = target.attr('data-max-pages')
+        const $pageData = parseInt(target.attr('data-page'))
+
+        target.attr('data-page', $pageData + 1)
+
+        try {
+            const resp = await fetch(musicData.root_url + `/wp-json/music/v1/uploadedArtistsPaginations?page=${$pageData}`)
+            const json = await resp.json();
+
+            if (!resp.ok) {
+                throw new Error(json.message);
+            } else {
+                const container = $('.artists-list')
+
+                json.posts.forEach(post => {
+                    container.append(baseCardNode(post))
+                })
+
+                if ($pageData >= $maxPages) {
+                    target.hide()
+                }
+            }
+        } catch {
+            alert ('Something went wrong')
+        }
+    }
+
+    async function handleAlltags(target) {
+        const $maxPages = target.attr('data-max-pages')
+        const $pageData = parseInt(target.attr('data-page'))
+
+        target.attr('data-page', $pageData + 1)
+
+        try {
+            const resp = await fetch(musicData.root_url + `/wp-json/music/v1/allTagsPaginations?page=${$pageData}`)
+            const json = await resp.json();
+
+            if (!resp.ok) {
+                throw new Error(json.message);
+            } else {
+                const container = $('.tags-list')
+
+                json.posts.forEach(post => {
+                    container.append(baseCardNode(post))
+                })
+
+                if ($pageData >= $maxPages) {
+                    target.hide()
+                }
+            }
+        } catch (e) {
+            console.log(e, 'eee');
+            
+            alert ('Something went wrong')
+        }
+    }
+
+    async function handleAllArtists(target) {
+        const $maxPages = target.attr('data-max-pages')
+        const $pageData = parseInt(target.attr('data-page'))
+
+        target.attr('data-page', $pageData + 1)
+
+        try {
+            const resp = await fetch(musicData.root_url + `/wp-json/music/v1/allArtistsPaginations?page=${$pageData}`)
+            const json = await resp.json();
+
+            if (!resp.ok) {
+                throw new Error(json.message);
+            } else {
+                const container = $('.artists-list')
+
+                json.posts.forEach(post => {
+                    container.append(baseCardNode(post))
+                })
+
+                if ($pageData >= $maxPages) {
+                    target.hide()
+                }
+            }
+        } catch {
+            alert ('Something went wrong')
+        }
+    }
+
     async function handleUploadedSongs(target) {
         const $maxPages = target.attr('data-max-pages')
         const $pageData = parseInt(target.attr('data-page'))
         const $artist = target.attr('data-artist') ? parseInt(target.attr('data-artist')) : false
         const $tag = target.attr('data-tag') ? parseInt(target.attr('data-tag')) : false
+        const $is_all_songs = target.attr('data-all-songs') ?? false
 
         target.attr('data-page', $pageData + 1);
 
         let url = musicData.root_url + `/wp-json/music/v1/songsPaginations?page=${$pageData}`
 
         if ($artist) {
-            url += `?artist=${$artist}`
+            url += `&artist=${$artist}`
         } else if ($tag) {
-            url += `?tag=${$tag}`
+            url += `&tag=${$tag}`
+        } else if ($is_all_songs) {
+            url += `&all_songs=true`
         }
 
         try {
@@ -389,16 +554,15 @@ jQuery(document).ready(function ($) {
             const json = await resp.json();
 
             if (!resp.ok) {
-                console.log('here');
                 throw new Error(json.message);
             } else {
-                const container = $('.favsongs-page-list')
+                const container = $('.songs-list')
 
                 json.posts.forEach(post => {
                     container.append(songNode(post))
                 })
 
-                if ($pageData + 1 >= $maxPages) {
+                if ($pageData >= $maxPages) {
                     target.hide()
                 }
             }
@@ -607,7 +771,7 @@ jQuery(document).ready(function ($) {
                         `<div class="search-no-results">No artists matches that search.</div> <a class="ajax-link" href="${musicData.root_url}/artists">View all artists</a>`}
                         ${results.artist.map(item => `<li><a class="ajax-link" href="${item.permalink}">${item.title}</a></li>`).join("")}
                         ${results.artist.length ? "</ul>" : ""}
-                        ${results.artist.length > 7 ? `<a class="ajax-link" href="${musicData.root_url}/search-results?type=artist&ids=${results.artist_ids}">View all searching artists</a>` : ''}
+                        ${results.artist.length > 0 ? `<a class="ajax-link" href="${musicData.root_url}/search-results?type=artist&ids=${results.artist_ids}">View all searching artists</a>` : ''}
                     </div>
                 </div>
             `)

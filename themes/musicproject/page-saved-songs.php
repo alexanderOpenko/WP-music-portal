@@ -1,17 +1,11 @@
 <?php
 get_header();
-$saved_songs = my_saved_items('songs', 'song')['saved_items'];
+$paged = get_query_var('paged') ?: 1;
 
-$tabs = [
-    [
-        'title' => 'Uploaded songs',
-        'slug' => 'favorite-songs',
-    ],
-    [
-        'title' => 'Saved song',
-        'slug' => 'saved-songs',
-    ],
-];
+$saved_songs = my_saved_items('songs', 'song', $paged, 15)['saved_items'];
+
+require get_theme_file_path('inc/songs-tabs-links.php');
+$tabs = SONGS_TABS_LINKS;
 ?>
 
 <div class="content-container">
@@ -37,6 +31,15 @@ $tabs = [
             <div>
                 <?php get_template_part('template-parts/songs-list', null, ['songs' => $saved_songs]); ?>
             </div>
+        </div>
+    <?php endif ?>
+
+    <?php if ($saved_songs->found_posts > 15) : ?>
+        <div class="paginate-saved-content-js cursor-pointer"
+            data-type="saved-songs"
+            data-page=2
+            data-max-pages="<?php echo $saved_songs->max_num_pages ?>">
+            view more
         </div>
     <?php endif ?>
 </div>

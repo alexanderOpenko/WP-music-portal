@@ -5,14 +5,14 @@
 
         <h3 class="m-0 !ml-5">
             <a class="ajax-link" href="<?php the_permalink(); ?>">
-                <?php the_field('band') ?>
+                <?php echo get_the_title(get_field('artist')[0]);?>
                 -
                 <?php the_title(); ?>
             </a>
         </h3>
     </div>
 
-    <div class="flex">
+    <div class="flex items-center">
         <?php
         if (get_the_author_meta('ID') === get_current_user_id()) : ?>
             <?php get_template_part('template-parts/delete-icon', null, ['post_type' => 'song', 'post_id' => get_the_id(), 'content-name' => get_the_title()]) ?>

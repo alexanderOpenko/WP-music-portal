@@ -53,12 +53,11 @@ function checkArtistExisting(string $band): bool
     return $query->found_posts == 0 ? false : true;
 }
 
-function my_saved_items(string $field_type, string $post_type) {
+function my_saved_items(string $field_type, string $post_type, int $paged, int $posts_per_page) {
     if (!is_user_logged_in()) {
         return [];
     }
 
-    // Получаем ID первого поста 'usermeta' автора
     $my_items_post_id = get_posts([
         'author' => get_current_user_id(),
         'post_type' => 'usermeta',
@@ -67,14 +66,15 @@ function my_saved_items(string $field_type, string $post_type) {
         'posts_per_page' => 1
     ]);
 
-    // Извлекаем сохранённые ID песен, если пост найден
-    $my_items_ids = !empty($my_items_post_id) ? array_values(get_field($field_type, $my_items_post_id[0])) : [];
+    $my_items_ids = !empty($my_items_post_id) ? array_values((array) get_field($field_type, $my_items_post_id[0])) : [];
 
     $saved_items = null;
     if (!empty($my_items_ids)) {
         $saved_items = new WP_Query([
             'post_type' => $post_type,
-            'post__in' => $my_items_ids
+            'post__in' => $my_items_ids,
+            'posts_per_page' => $posts_per_page,
+            'paged' => $paged
         ]);
     }
 
@@ -175,7 +175,7 @@ function update_artist_tags($data)
     }
 
     if ($data['tags']) {
-        add_value_to_field('tag', explode(',', $data['tags']), $artist_id);
+        add_value_to_field('tag', $data['tags'], $artist_id);
     }
 
     return [
@@ -230,7 +230,7 @@ function updateUserTags(array|int|string $tags) {
         $query->the_post();
         $post_id = get_the_ID();
         wp_reset_postdata();
-        add_value_to_field('tag', explode(',', $tags), $post_id);
+        add_value_to_field('tag', $tags, $post_id);
     } else {
         wp_insert_post([
             'post_type' => 'usermeta',
@@ -238,7 +238,7 @@ function updateUserTags(array|int|string $tags) {
             'post_title' => wp_get_current_user()->nickname,
             'meta_input' => [
                 'user' => get_current_user_id(),
-                'tag' => explode(',', $tags)
+                'tag' => $tags
             ]
         ]);
     }
@@ -260,7 +260,7 @@ function create_artist($data): array
     $is_image_uploaded = false;
 
     $meta_input = [
-        'tag' => $data['tags'] ? explode(',', $data['tags']) : []
+        'tag' => $data['tags'] ?? []
     ];
 
     if (isset($_FILES['artist_image']) && $_FILES['artist_image']['size'] > 0) {

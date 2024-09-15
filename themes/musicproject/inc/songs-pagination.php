@@ -22,6 +22,8 @@ function getPage($data)
     $params['meta_query']['artist'] = $data['artist'];
   } else if ($data['tag']) {
     $params['meta_query']['tag'] = $data['tag'];
+  } else if($data['all_songs']) {
+    $params['posts_per_page'] = 50;
   } else {
     $params['author'] = get_current_user_id();
   }

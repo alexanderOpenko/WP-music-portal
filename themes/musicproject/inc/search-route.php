@@ -37,7 +37,7 @@ function musicSearchResults($data)
           'title' => get_the_title(),
           'song_link' => str_replace([',', ' '], '', get_field('song_link')['url']),
           'link' => get_the_permalink(),
-          'band' => get_field('band'),
+          'band' => get_the_title(get_field('artist')[0]),
           'postType' => get_post_type(),
           'authorName' => get_the_author()
         ]);
@@ -96,7 +96,7 @@ function musicSearchResults($data)
             'title' => get_the_title(),
             'song_link' => str_replace([',', ' '], '', get_field('song_link')['url']),
             'link' => get_the_permalink(),
-            'band' => get_field('band'),
+            'band' => get_the_title(get_field('artist')[0]),
             'postType' => get_post_type(),
             'authorName' => get_the_author()
           ]);
@@ -146,7 +146,7 @@ function musicSearchResults($data)
           'title' => get_the_title(),
           'song_link' => str_replace([',', ' '], '', get_field('song_link')['url']),
           'link' => get_the_permalink(),
-          'band' => get_field('band'),
+          'band' => get_the_title(get_field('artist')[0]),
           'postType' => get_post_type(),
           'authorName' => get_the_author()
         ]);

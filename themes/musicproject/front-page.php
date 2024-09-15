@@ -16,10 +16,14 @@ $recomendedTracksWidth = $songs->found_posts ? 'half-space' : 'w-full';
     <?php endif ?>
 
     <div class="md:flex justify-between">
-        <?php if (is_user_logged_in()) : ?> 
+        <?php if (is_user_logged_in() && $recomended_tracks->found_posts) : ?> 
             <div class="<?php echo $recomendedTracksWidth; ?>">
+                <h1>
+                    Recomended tracks
+                </h1>
+                
                 <?php 
-                    get_template_part('template-parts/recomended-tracks', null, ['recomended_tracks' => $recomended_tracks]); 
+                    get_template_part('template-parts/songs-list', null, ['songs' => $recomended_tracks]); 
 
                     if ($recomended_tracks->found_posts > 5) {
                         echo "<a href='" . site_url('/recomended') . "'> View all recomended tracks</a>";
@@ -35,10 +39,8 @@ $recomendedTracksWidth = $songs->found_posts ? 'half-space' : 'w-full';
                 </h1>
 
                 <div>
-                    <?php while ($songs->have_posts()) {
-                        $songs->the_post();
-                        get_template_part('template-parts/song-item');
-                    }
+                    <?php 
+                    get_template_part('template-parts/songs-list', null, ['songs' => $songs]); 
 
                     if ($songs->found_posts > 5) {
                         echo "<a href='" . site_url('/popular') . "'> View all popular tracks</a>";
@@ -50,12 +52,11 @@ $recomendedTracksWidth = $songs->found_posts ? 'half-space' : 'w-full';
     </div>
 
     <?php if ($artists->found_posts) : ?>
-        <h1>
-            Popular Artists
-        </h1>
-
         <div>
-            <?php get_template_part('template-parts/artists-grid', null, ['artists' => $artists]) ?>
+            <?php get_template_part('template-parts/artists-grid', null, [
+                'artists' => $artists,
+                'title' => 'Popular Artists'
+                ]) ?>
         </div>
     <?php endif ?>
 </div>

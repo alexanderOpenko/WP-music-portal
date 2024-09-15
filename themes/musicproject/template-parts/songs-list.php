@@ -1,13 +1,15 @@
 <?php
-$my_saved_songs = my_saved_items('songs', 'song')['my_items_ids'];
-$is_saved_song = false;
+$my_saved_songs = my_saved_items('songs', 'song', 1, -1)['my_items_ids'];
 
-$save_icon_args = [
-    'action' => 'save',
-    'type' => 'songs'
-];
+echo '<div class="songs-list">';
 
 while ($args['songs']->have_posts()) {
+    $save_icon_args = [
+        'action' => 'save',
+        'type' => 'songs'
+    ];
+
+    $is_saved_song = false;
     $args['songs']->the_post();
     $save_icon_args['post_id'] = get_the_id();
 
@@ -22,5 +24,6 @@ while ($args['songs']->have_posts()) {
 
     get_template_part('template-parts/song-item', null, ['save_icon_args' => $save_icon_args]);
 }
+echo '</div>';
 
 wp_reset_postdata();

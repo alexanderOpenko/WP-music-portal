@@ -14,14 +14,20 @@ $search_query = new WP_Query([
 echo '<div class="content-container">';
 
 if ($type === 'song' && $search_query->found_posts) {
+    echo '<h1>Search results songs</h1>';
     get_template_part('template-parts/songs-list', null, ['songs' => $search_query]);
 }
 
 if ($type === 'artist' && $search_query->found_posts) {
-    get_template_part('template-parts/artists-grid', null, ['artists' => $search_query]);
+    get_template_part('template-parts/artists-grid', null, [
+        'artists' => $search_query,
+        'title' => 'Search results artists'
+    ]);
 }
 
 if ($type === 'musictag' && $search_query->found_posts) {
+    echo '<h1>Search results tags</h1>';
+
     get_template_part('template-parts/tags-grid', null, ['tags' => $search_query]);
 }
 
