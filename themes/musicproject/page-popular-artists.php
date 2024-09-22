@@ -1,8 +1,17 @@
 <?php get_header();
 $paged = (get_query_var('paged')) ? get_query_var('paged') : 1;
 $artists = getMostPopularArtists(9, $paged);
-require get_theme_file_path('inc/artists-tabs-links.php');
-$tabs = ARTIST_TABS;
+
+$tabs = [
+    [
+        'title' => 'Popular Songs',
+        'slug' => 'popular',
+    ],
+    [
+        'title' => 'Popular Artists',
+        'slug' => 'popular-artists',
+    ],
+];
 ?>
 
 <div class="content-container">

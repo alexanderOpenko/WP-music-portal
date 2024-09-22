@@ -7,7 +7,14 @@ $saved_tags = my_saved_items('tag', 'musictag', $paged, 15)['saved_items'];
 ?>
 
 <div class="content-container">
-    <?php get_template_part('template-parts/tab-items', null, ['tabs' => $tabs]); ?>
+    <?php get_template_part('template-parts/tab-items', null, ['tabs' => $tabs]); 
+
+    if (!is_user_logged_in()) {
+        echo '<div> Only logged in users can save tags </div>';
+        wp_footer();
+        return;
+    }
+    ?>
 
     <?php if ($saved_tags->found_posts) : ?>
         <?php get_template_part('template-parts/tags-grid', null, ['tags' => $saved_tags]) ?>

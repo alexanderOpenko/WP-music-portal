@@ -22,11 +22,7 @@ $tabs = [
         </h1>
 
         <div>
-            <?php while ($songs->have_posts()) {
-                $songs->the_post();
-                get_template_part('template-parts/song-item');
-            }
-            ?>
+            <?php get_template_part('template-parts/songs-list', null, ['songs' => $songs]); ?>
         </div>
 
         <div class="text-center">

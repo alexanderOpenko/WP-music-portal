@@ -1,6 +1,6 @@
 <?php get_header();
 $myArtists = new WP_Query([
-    'author' => get_current_user_id(),
+    'author__in' => [get_current_user_id()],
     'post_type' => 'artist',
     'posts_per_page' => 15
 ]);
@@ -10,7 +10,14 @@ $tabs = ARTIST_TABS;
 ?>
 
 <div class="content-container">
-    <?php get_template_part('template-parts/tab-items', null, ['tabs' => $tabs]); ?>
+    <?php get_template_part('template-parts/tab-items', null, ['tabs' => $tabs]);
+
+    if (!is_user_logged_in()) {
+        echo '<div> Only logged in users can upload artists </div>';
+        wp_footer();
+        return;
+    }
+    ?>
 
     <div class="accordion">
         <div class="flex justify-between items-center">
@@ -20,7 +27,7 @@ $tabs = ARTIST_TABS;
             <?php get_template_part('template-parts/single-accordion-button', null, ['open_name' => 'Open form', 'close_name' => 'Close form', 'is_open' => true]) ?>
         </div>
 
-        <div class="accordion-content">
+        <div class="accordion-content visible">
             <form class="artist-form">
                 <div class="flex">
                     <div class="max-w-1/2 w-full mr-4">
@@ -47,7 +54,7 @@ $tabs = ARTIST_TABS;
                             <div class="flex justify-between items-center mb-4">
                                 <?php get_template_part('template-parts/single-accordion-button', null, ['open_name' => 'Add tags', 'close_name' => 'Collapse tags', 'is_open' => false]) ?>
                             </div>
-                            <div class="accordion-content invisible h-0">
+                            <div class="accordion-content invisible">
                                 <label for="tags-select">
                                     <span>
                                         Search for existing tags or create your own. If no suitable tags are found, you can create new ones on the <a class="ajax-link" href="<?php echo site_url('/tag/') ?>">

@@ -10,7 +10,7 @@ while (have_posts()) {
   $image_id = get_post_field('artist_image', get_field('artist')[0]);
   $image_url = get_post_image_custom($image_id, 'full');
 
-  $my_saved_songs = my_saved_items('songs', 'song')['my_items_ids'];
+  $my_saved_songs = my_saved_items('songs', 'song', 1, -1)['my_items_ids'];
   $is_saved_song = false;
 
   if (in_array(get_the_id(), $my_saved_songs)) {
@@ -34,18 +34,28 @@ while (have_posts()) {
 ?>
 
 <div class="content-container">
+  <?php get_template_part('template-parts/edit-description', null, [
+    'post_type' => 'song',
+    'post_id' => $post_id,
+    'content' => get_the_content(),
+    'post_author' => get_the_author_meta('ID')
+  ]) ?>
+
   <div class="accordion">
     <div class="flex justify-between items-center mb-4">
       <?php get_template_part('template-parts/single-accordion-button', null, ['open_name' => 'Edit tags', 'close_name' => 'Collapse tag edditing', 'is_open' => false]) ?>
     </div>
 
-    <div class="accordion-content invisible h-0">
+    <div class="accordion-content invisible">
       <form class="update-song-tag">
         <input type="hidden" value="<?php echo $post_id ?>" name="post_id" />
-        <?php get_template_part('template-parts/tag-field', null, ['tag_ids' => $tag_ids]) ?>
-        <button class="mb-2 update-tag-button" type="submit">
-          submit
-        </button>
+       
+        <div class="flex items-start w-full max-w-[550px]">
+          <?php get_template_part('template-parts/tag-field', null, ['tag_ids' => $tag_ids]) ?>
+          <button class="mb-2 update-tag-button" type="submit">
+            submit
+          </button>
+        </div>
       </form>
     </div>
   </div>
@@ -59,7 +69,7 @@ while (have_posts()) {
     <?php get_template_part('template-parts/artists-grid', null, [
       'artists' => $artists,
       'title' => 'Similar artists'
-      ]) ?>
+    ]) ?>
   <?php endif ?>
 </div>
 

@@ -14,6 +14,10 @@ jQuery(document).ready(function ($) {
             submitUpdateTag(e, $(this));
         });
 
+        $(document).on('submit', '.edit-post-description', function (e) {
+            submitUpdateCustomPostContent(e, $(this));
+        });
+
         $(document).on('submit', '.song-form', function (e) {
             submitSongForm(e, $(this));
         });
@@ -77,8 +81,71 @@ jQuery(document).ready(function ($) {
         $(document).on('click', '.paginate-saved-content-js', function (e) {
             handleSavedContentPagination($(this))
         })
+        
+        $(document).on('click', '.edit-description-js', function (e) {
+            handleEditDescription($(this))
+        })
+
+        $(document).on('submit', '.update-post-image', function (e) {
+            handleUpdateImage(e, $(this))
+        })
 
         $.data(document, 'eventsHandlerAttached', true);
+    }
+
+    async function handleUpdateImage(e, form) {
+        e.preventDefault()
+
+        const data = new FormData(form[0])
+
+        const resp = await fetch(musicData.root_url + "/wp-json/music/v1/updateImage", {
+            method: "POST",
+            body: data
+        })
+
+        window.location.reload()
+    }
+
+    function handleEditDescription(target) {
+        let $textarea = target.closest('.description-container').find('textarea')
+        const $button = target.closest('.description-container').find('button')
+
+        if (target.attr('data-editting') == 'disable') {
+            $textarea.show()
+            target.closest('.description-container').addClass('editable')
+            $textarea.removeAttr('readonly')
+            $button.show()  
+            target.attr('data-editting', 'enable')
+        } else {            
+            if ($textarea.val() === '') {
+                $textarea.hide()
+            }
+            target.closest('.description-container').removeClass('editable')
+            $textarea.attr('readonly', true)
+            $button.hide()  
+            target.attr('data-editting', 'disable')
+        }
+    }
+
+    async function submitUpdateCustomPostContent(e, form) {
+        e.preventDefault()
+        const data = new FormData(form[0])
+
+        try {
+            const resp = await fetch(musicData.root_url + "/wp-json/music/v1/updateCustomPostContent", {
+                method: 'POST',
+                body: data,
+                headers: {
+                    "X-WP-Nonce": musicData.nonce,
+                }
+            })
+
+            if (resp.ok) {
+                $('.edit-description-js').click()
+            }
+        } catch {
+            alert('something went wrong')
+        }
     }
 
     async function saveSubmitHandler(e, form) {
@@ -175,28 +242,39 @@ jQuery(document).ready(function ($) {
     }
 
     function accordeonToggler(target) {
-        const $content = target.closest('.accordion').find('.accordion-content').first()
+        const $content = target.closest('.accordion').find('.accordion-content').first();
+    
+            /**
+         * Custom function to toggle accordion visibility without using jQuery's built-in slide or fade methods.
+         * 
+         * Reasoning:
+         * - The built-in jQuery methods (e.g., `slideUp()`, `slideDown()`, or `toggle()`) apply `display: none` 
+         *   to hidden elements, which causes issues when working with plugins like Selectize.js. 
+         * - For example, Selectize.js requires the `select` element to be visible for proper initialization. 
+         * - If the accordion is hidden using `display: none`, Selectize will not initialize properly, 
+         *   breaking the functionality for hidden form elements.
+         * - Instead, this approach only sets the height of the accordion to `0` while keeping the element visible in the DOM,
+         *   thus ensuring that plugins like Selectize can still initialize and work correctly, even when the content is hidden.
+         */
 
-        function toggleVisibilityAndHeight(element, duration) {
-            if (element.css('visibility') === 'visible') {
-                element.animate({ height: 0 }, duration, function () {
-                    element.addClass('invisible').removeClass('visible');
-                    target.find('.button-open-text').show();
-                    target.find('.button-close-text').hide();
-                });
-                $content.find('.accordion').hide();
+        function toggleVisibility(element) {
+            if (element.hasClass('visible')) {
+                // Скрытие: высота 0 и добавление класса "invisible"
+                element.addClass('invisible').removeClass('visible').css('height', 0);
+                target.find('.button-open-text').show();
+                target.find('.button-close-text').hide();
+                element.find('.accordion-content').addClass('invisible').removeClass('visible').css('height', 0);
             } else {
-                element.addClass('visible').removeClass('invisible');
-                element.animate({ height: '100%' }, duration, function () {
-                    target.find('.button-open-text').hide();
-                    target.find('.button-close-text').show();
-                    $content.find('.accordion').show();
-                })
+                // Отображение: убираем класс "invisible" и устанавливаем "visible"
+                element.removeClass('invisible').addClass('visible').css('height', 'auto');
+                target.find('.button-open-text').hide();
+                target.find('.button-close-text').show();
             }
         }
-
-        toggleVisibilityAndHeight($content, 300);
+    
+        toggleVisibility($content);
     }
+
 
     function playFirstArtistSong() {
         $('.song-play').first().click()
@@ -355,7 +433,7 @@ jQuery(document).ready(function ($) {
         }
     }
     // Делегируем событие click на документ
-    function ajaxLinkHandler(e, target, urlParam = null, isPopState = false) {
+    async function ajaxLinkHandler(e, target, urlParam = null, isPopState = false) {
         if (target && target.hasClass('normal-link')) {
             return
         }
@@ -365,22 +443,34 @@ jQuery(document).ready(function ($) {
             return
         }
 
+        console.log(target, 'target');
+        
+
         e.preventDefault()
 
+        $('.spinner-js').removeClass('hidden')
         const url = urlParam ?? target.attr('href');
 
-        $.ajax({
-            url: url,
-            success: function (data) {
+        try {
+            const resp = await fetch(url)
+
+            if (!resp.ok) {
+                throw new Error()
+            } else {
+                const data = await resp.text();
+                
                 const tempElement = $('<div>').html(data);
                 const contentData = tempElement.find('#content-container').html();
                 $('#content-container').html(contentData);
-                // Обновляем URL только если это не popstate
+
                 if (!isPopState) {
                     history.pushState(null, '', url);
                 }
+                $('.spinner-js').addClass('hidden')
             }
-        });
+        } catch (e) {
+            alert (e)
+        }
     }
 
     async function handleSavedContentPagination(target) {

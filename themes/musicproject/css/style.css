@@ -31,8 +31,8 @@ a {
 }
 
 .icon {
-    width: 25px;
-    height: 25px;
+    width: 17px;
+    height: 17px;
     cursor: pointer;
 }
 
@@ -456,4 +456,191 @@ button {
   background-color: #0056b3;
   color: #fff;
   border-color: #0056b3;
+}
+
+.description-container.editable .edit-icon {
+  display: none;
+}
+
+.description-container.editable .close-icon {
+  display: block;
+}
+
+textarea {
+  white-space: pre-wrap;
+  padding: 10px;
+  max-width: 500px;
+  width: 100%;
+  height: 200px;
+}
+
+textarea[readonly] {
+  border: none;   
+  color: #666;              
+  cursor: auto;       
+  resize: none;   
+  height: 80px;         
+}
+
+textarea:focus-visible {
+  outline: none;   
+}
+
+textarea:not([readonly]) {
+  resize: none;  
+  border: 2px solid rgb(180, 180, 180);
+  border-radius: 8px;
+}
+
+/* menu */
+
+/* Основное меню */
+.menu {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  background-color: #333;
+}
+
+.menu > li {
+  position: relative;
+}
+
+.menu li a {
+  display: block;
+  padding: 15px 20px;
+  color: #fff;
+  text-decoration: none;
+  background-color: #333;
+  transition: background-color 0.3s;
+}
+
+.menu > li > a:hover {
+  background-color: #555;
+}
+
+/* Подменю */
+.sub-menu {
+  top: 100%;
+  left: 0;
+  background-color: #444;
+  list-style: none;
+  padding: 0;
+  margin: 0 0 0 20px;
+}
+
+.desctop-menu .sub-menu {
+  position: absolute;
+  display: none;
+
+}
+
+.sub-menu li {
+  position: relative;
+}
+
+.sub-menu > li > a {
+  padding: 10px 20px;
+  color: #fff;
+  text-decoration: none;
+  display: block;
+  background-color: #444;
+  transition: background-color 0.3s;
+}
+
+.sub-menu li a:hover {
+  background-color: #666;
+}
+
+/* Показ подменю при наведении */
+.desctop-menu .menu-item-has-children:hover .sub-menu {
+  display: block;
+}
+
+/* Текущий активный элемент меню */
+.current-menu-item > a,
+.current-menu-parent > a {
+  background-color: #666;
+}
+
+/* Стили для вложенных подменю, если потребуется */
+.sub-menu .sub-menu {
+  left: 100%;
+  top: 0;
+}
+
+/* mobile-menu */
+
+/* Стили для бургер-иконки */
+.burger-icon {
+  cursor: pointer;
+  display: block;
+  width: 30px;
+  height: 25px;
+  position: relative;
+}
+
+.burger-icon span {
+  display: block;
+  width: 100%;
+  height: 4px;
+  background-color: #333;
+  margin-bottom: 5px;
+  transition: 0.3s;
+}
+
+/* Меню по умолчанию скрыто */
+.mobile-menu {
+  display: block;
+  list-style: none;
+  padding: 0;
+  background-color: #333;
+  color: #fff;
+}
+
+.mobile-menu .menu-item {
+  position: relative;
+}
+
+.mobile-menu .menu-item > a {
+  padding: 15px;
+  display: block;
+  color: #fff;
+  text-decoration: none;
+  background-color: #333;
+}
+
+/* .mobile-menu .sub-menu {
+  display: none;
+  background-color: #444;
+} */
+
+.mobile-menu .sub-menu a {
+  padding: 10px 15px;
+  display: block;
+  color: #fff;
+  text-decoration: none;
+}
+
+.visible {
+  visibility: visible;
+}
+
+.invisible {
+  visibility: hidden;
+  height: 0;
+}
+
+/* Анимация бургер-иконки при открытии */
+.burger-icon.active span:nth-child(1) {
+  transform: rotate(45deg) translate(5px, 5px);
+}
+
+.burger-icon.active span:nth-child(2) {
+  opacity: 0;
+}
+
+.burger-icon.active span:nth-child(3) {
+  transform: rotate(-45deg) translate(5px, -5px);
 }

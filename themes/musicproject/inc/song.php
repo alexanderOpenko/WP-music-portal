@@ -23,10 +23,11 @@ function manageSong()
     ]);
 }
 
-function getSavedSongs($data) {
+function getSavedSongs($data)
+{
     $saved_songs = my_saved_items('songs', 'song', $data['page'], 15)['saved_items'];
 
-    $songs = array_map(function($post) {
+    $songs = array_map(function ($post) {
         return [
             'ID' => $post->ID,
             'song_link' => get_field('song_link', $post->ID)['url'],
@@ -34,18 +35,24 @@ function getSavedSongs($data) {
             'link' => get_permalink($post->ID),
             'title' => $post->post_title
         ];
-    },$saved_songs->posts);
+    }, $saved_songs->posts);
 
     return new WP_REST_Response(['posts' => $songs], 200);
 }
 
-function saveSong($data) {
-    updateUserSavedItems($data['post_id'], $data['action'], $data['type']);
+function saveSong($data)
+{
+    if (is_user_logged_in()) {
+        updateUserSavedItems($data['post_id'], $data['action'], $data['type']);
 
-    return new WP_REST_Response([null, 200]);
+        return new WP_REST_Response([null, 200]);
+    } else {
+        return new WP_REST_Response(["message" =>  "Only logged in users can save items."], 402);
+    }
 }
 
-function updatePlayCount($data) {
+function updatePlayCount($data)
+{
     $song_play_counts = get_field('play_count', $data['id']);
     $artist_id = get_field('artist', $data['id'])[0];
     $artist_play_counts = get_field('play_count', $artist_id);
@@ -75,7 +82,7 @@ function createSong($data)
 
         if (!$isExistBand) {
             $artist_id = create_artist($data)['artist_id'];
-        } else {       
+        } else {
             $artist_id = update_artist_tags($data)['artist_id'];
         }
 
@@ -87,7 +94,7 @@ function createSong($data)
             'post_content' => $data['content'],
             'meta_input' => [
                 'artist' => [$artist_id],
-                'tag' => $data['tags'],
+                'tag' => [$data['tags']],
                 'song_link' => ['url' => $data['song_link']],
                 'band' => $data['band']
             ]
@@ -101,7 +108,7 @@ function createSong($data)
         ]);
 
         //for rest api response
-        $post = array_map(function($post) {
+        $post = array_map(function ($post) {
             return [
                 'ID' => $post->ID,
                 'song_link' => get_field('song_link', $post->ID)['url'],
@@ -109,7 +116,7 @@ function createSong($data)
                 'link' => get_permalink($post->ID),
                 'title' => $post->post_title
             ];
-        },$postQuery->posts);
+        }, $postQuery->posts);
 
         add_value_to_field('songs', $SongPostId, $artist_id);
         return new WP_REST_Response(["post" =>  $post[0]], 200);

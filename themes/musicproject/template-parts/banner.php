@@ -33,6 +33,6 @@
     </div>
 
     <div class="right-container">
-        <img class="object-cover" src="<?php echo esc_url($args['image_url']); ?>" />
+        <img class="object-cover banner-image" src="<?php echo esc_url($args['image_url']); ?>" />
     </div>
 </div>

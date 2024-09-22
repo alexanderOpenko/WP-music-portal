@@ -55,7 +55,10 @@ function checkArtistExisting(string $band): bool
 
 function my_saved_items(string $field_type, string $post_type, int $paged, int $posts_per_page) {
     if (!is_user_logged_in()) {
-        return [];
+        return [
+            'my_items_ids' => [],
+            'saved_items' => []
+        ];
     }
 
     $my_items_post_id = get_posts([

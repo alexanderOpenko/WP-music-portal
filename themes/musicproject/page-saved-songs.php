@@ -9,7 +9,14 @@ $tabs = SONGS_TABS_LINKS;
 ?>
 
 <div class="content-container">
-    <?php get_template_part('template-parts/tab-items', null, ['tabs' => $tabs]); ?>
+    <?php get_template_part('template-parts/tab-items', null, ['tabs' => $tabs]); 
+    if (!is_user_logged_in()) {
+        echo '<div> Only logged in users can save songs </div>';
+        wp_footer();
+        return;
+    }
+    ?>
+    
     <?php if (!is_user_logged_in()) : ?>
         <div>
             Only logged in users can save songs

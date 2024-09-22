@@ -14,7 +14,14 @@ $uploaded_songs = new WP_Query([
 ?>
 
 <div class="content-container">
-    <?php get_template_part('template-parts/tab-items', null, ['tabs' => $tabs]); ?>
+    <?php get_template_part('template-parts/tab-items', null, ['tabs' => $tabs]); 
+    
+    if (!is_user_logged_in()) {
+        echo '<div> Only logged in users can save songs </div>';
+        wp_footer();
+        return;
+    }
+    ?>
 
     <div>
         <div class="accordion">
@@ -25,7 +32,7 @@ $uploaded_songs = new WP_Query([
                 <?php get_template_part('template-parts/single-accordion-button', null, ['open_name' => 'Open form', 'close_name' => 'Close form', 'is_open' => true]) ?>
             </div>
 
-            <div class="accordion-content">
+            <div class="accordion-content visible">
                 <form class="song-form">
                     <div class="flex">
                         <div class="max-w-1/2 w-full mr-4">

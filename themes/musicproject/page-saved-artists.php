@@ -7,7 +7,14 @@ $saved_artists = my_saved_items('artist', 'artist', $paged, 15)['saved_items'];
 ?>
 
 <div class="content-container">
-    <?php get_template_part('template-parts/tab-items', null, ['tabs' => $tabs]); ?>
+    <?php get_template_part('template-parts/tab-items', null, ['tabs' => $tabs]);
+
+    if (!is_user_logged_in()) {
+        echo '<div> Only logged in users can save artists from search</div>';
+        wp_footer();
+        return;
+    }
+    ?>
 
     <?php if ($saved_artists->found_posts) : ?>
         <?php get_template_part('template-parts/artists-grid', null, [

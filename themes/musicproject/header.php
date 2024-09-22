@@ -3,7 +3,8 @@
 
 <head>
     <meta charset="<?php bloginfo('charset'); ?>">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
     <link
         rel="stylesheet"
         href="https://cdnjs.cloudflare.com/ajax/libs/selectize.js/0.15.2/css/selectize.default.min.css"
@@ -25,6 +26,10 @@
         </div>
     </div>
 
+    <div class="flex items-center justify-center fixed inset-0 bg-gray-800 bg-opacity-50 z-50 spinner-js hidden">
+        <div class="spinner !w-[50px] !h-[50px]"></div>
+    </div>
+
     <div class="search-overlay">
         <div class="search-overlay__top flex items-center justify-between">
             <i class="fa fa-search search-overlay__icon ml-[15px] !text-[25px]" aria-hidden="true"></i>
@@ -41,41 +46,48 @@
         </div>
     </div>
 
-    <div id="content-container">
-        <header class="bg-black p-5 flex justify-end">
-            <div class="text-white">
-                <button type="button" class="search-btn">
-                    Search
-                </button>
-
-                <a class="ajax-link" href="<?php echo site_url('/tag/') ?>"> Tags </a>|
-                <a class="ajax-link" href="<?php echo site_url('/favorite-songs/') ?>">
-                    Songs (upload songs (mark with tags), save songs)
-                </a>|
-                <a class="ajax-link" href="<?php echo site_url('/favorite-artists/') ?>">
-                    artists (upload your artist (mark with tags), and explore artist to add to list)
-                </a>|
-                <a> albums (add or save from searching albums)</a>|
+    <header class="bg-black p-5 flex items-start justify-end">
+        <div class="mobile-menu-wrapper accordion ml-0 mr-auto my-0 block sm:hidden">
+            <div class="burger-icon accordion-button" id="burgerIcon">
+                <span></span>
+                <span></span>
+                <span></span>
             </div>
 
-            <div class="flex items-center gap-2.5">
-                <?php if (is_user_logged_in()) : ?>
-                    <span class="text-white">
-                        <a href="<?php echo site_url() ?>">
-                            <?php echo get_avatar(get_current_user_id()); ?>
-                        </a>
-                    </span>
+            <div class="accordion-content invisible">
+                <?php wp_nav_menu([
+                    'name' => 'menu',
+                    'menu_class' => 'menu mobile-menu',
+                    'mobile' => true,
+                    'add_li_class' => 'accordion'
+                ]) ?>
+            </div>
+        </div>
 
-                    <a href="<?php echo wp_logout_url();  ?>" class="">
-                        <span class="text-white">Log Out</span>
+        <div class="desctop-menu hidden sm:block">
+            <?php wp_nav_menu(['name' => 'menu']) ?>
+        </div>
+
+        <div class="flex items-center gap-2.5">
+            <a href="<?php echo esc_url(site_url('/search')); ?>" class="js-search-trigger site-header__search-trigger">
+                <i class="fa fa-search" aria-hidden="true"></i>
+            </a>
+
+            <?php if (is_user_logged_in()) : ?>
+                <span class="text-white">
+                    <a href="<?php echo site_url() ?>">
+                        <?php echo get_avatar(get_current_user_id()); ?>
                     </a>
-                <?php else : ?>
-                    <a href="<?php echo wp_login_url(); ?>" class="normal-link text-white">Login</a>
-                    <a href="<?php echo wp_registration_url(); ?>" class="normal-link text-white">Sign Up</a>
-                <?php endif; ?>
+                </span>
 
-                <a href="<?php echo esc_url(site_url('/search')); ?>" class="js-search-trigger site-header__search-trigger">
-                    <i class="fa fa-search" aria-hidden="true"></i>
+                <a href="<?php echo wp_logout_url();  ?>" class="">
+                    <span class="text-white">Log Out</span>
                 </a>
-            </div>
-        </header>
+            <?php else : ?>
+                <a href="<?php echo wp_login_url(); ?>" class="normal-link text-white">Login</a>
+                <a href="<?php echo wp_registration_url(); ?>" class="normal-link text-white">Sign Up</a>
+            <?php endif; ?>
+        </div>
+    </header>
+
+    <div id="content-container">

@@ -20,6 +20,8 @@ require get_theme_file_path('/inc/song.php');
 require get_theme_file_path('/inc/artist.php');
 require get_theme_file_path('/inc/search-route.php');
 require get_theme_file_path('/inc/custom-functions.php');
+require get_theme_file_path('/inc/updatePosts.php');
+require get_theme_file_path('/inc/update-image.php');
 
 require_once(ABSPATH . 'wp-admin/includes/post.php');
 require_once(ABSPATH . 'wp-admin/includes/image.php');
@@ -56,7 +58,7 @@ function delete_song_id_from_artist_on_song_delete($post_id)
 }
 add_action('before_delete_post', 'delete_song_id_from_artist_on_song_delete');
 
-function delete_musictag_id_from_related_posts_on_delete($post_id) 
+function delete_musictag_id_from_related_posts_on_delete($post_id)
 {
   if (get_post_type($post_id) == 'musictag') {
     $args = [
@@ -71,17 +73,17 @@ function delete_musictag_id_from_related_posts_on_delete($post_id)
       $musictags = get_field('tag', $post->ID);
 
       if (is_array($musictags) && ($key = array_search($post_id, $musictags)) !== false) {
-        unset($musictags[$key]); 
-        $musictags = array_values($musictags); 
-        update_field('tag', $musictags, $post->ID); 
-      } 
+        unset($musictags[$key]);
+        $musictags = array_values($musictags);
+        update_field('tag', $musictags, $post->ID);
+      }
     }
   }
 }
 
 add_action('before_delete_post', 'delete_musictag_id_from_related_posts_on_delete');
 
-function delete_songs_when_artist_is_deleted($post_id) 
+function delete_songs_when_artist_is_deleted($post_id)
 {
   if (get_post_type($post_id) == 'artist') {
     $args = [
@@ -91,13 +93,13 @@ function delete_songs_when_artist_is_deleted($post_id)
       'meta_query' => [
         'relation' => 'OR',
         [
-          'key' => 'artist', 
+          'key' => 'artist',
           'value' => $post_id,
-          'compare' => 'LIKE' 
+          'compare' => 'LIKE'
         ]
       ]
     ];
-    
+
     $songs = get_posts($args);
 
     foreach ($songs as $song) {
@@ -108,3 +110,45 @@ function delete_songs_when_artist_is_deleted($post_id)
 
 add_action('before_delete_post', 'delete_songs_when_artist_is_deleted');
 
+function my_nav_menu_submenu_css_class($classes, $args)
+{
+  if (isset($args->mobile)) {
+    $classes[] = 'accordion-content invisible';
+  }
+
+  return $classes;
+}
+
+add_filter('nav_menu_submenu_css_class', 'my_nav_menu_submenu_css_class', 10, 3);
+
+function add_accordion_button_to_menu($args, $item, $depth)
+{
+
+  if (isset($args->mobile) && in_array('menu-item-has-children', $item->classes) && $depth === 0) {
+    $args->before = '<div class="menu-item-container flex items-center justify-between">';
+    $args->after = '<button class="accordion-button w-2/4 py-[15px] px-[20px] flex justify-end" aria-expanded="false">
+    <div class="icon">
+    <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" fill="#000000" height="800px" width="800px" version="1.1" id="Layer_1" viewBox="0 0 330 330" xml:space="preserve">
+            <path id="XMLID_225_" d="M325.607,79.393c-5.857-5.857-15.355-5.858-21.213,0.001l-139.39,139.393L25.607,79.393  c-5.857-5.857-15.355-5.858-21.213,0.001c-5.858,5.858-5.858,15.355,0,21.213l150.004,150c2.813,2.813,6.628,4.393,10.606,4.393  s7.794-1.581,10.606-4.394l149.996-150C331.465,94.749,331.465,85.251,325.607,79.393z"></path>
+        </svg>
+        </div>
+    </button></div>';
+  } else {
+    $args->before = '';
+    $args->after = '';
+  }
+
+  return $args;
+}
+
+add_filter('nav_menu_item_args', 'add_accordion_button_to_menu', 10, 3);
+
+
+function add_additional_class_on_li($classes, $item, $args)
+{
+  if (isset($args->add_li_class) && in_array('menu-item-has-children', $item->classes)) {
+    $classes[] = $args->add_li_class;
+  }
+  return $classes;
+}
+add_filter('nav_menu_css_class', 'add_additional_class_on_li', 1, 3);
