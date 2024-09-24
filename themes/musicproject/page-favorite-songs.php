@@ -62,7 +62,7 @@ $uploaded_songs = new WP_Query([
                                 <div class="flex justify-between items-center mb-4">
                                     <?php get_template_part('template-parts/single-accordion-button', null, ['open_name' => 'Add tags', 'close_name' => 'Collapse tags', 'is_open' => false]) ?>
                                 </div>
-                                <div class="accordion-content invisible h-0">
+                                <div class="accordion-content invisible">
                                     <label for="tags-select">
                                         <span>
                                             Search for existing tags or create your own. If no suitable tags are found, you can create new ones on the <a class="ajax-link" href="<?php echo site_url('/tag/') ?>">

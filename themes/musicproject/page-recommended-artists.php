@@ -1,15 +1,15 @@
 <?php get_header();
 $paged = (get_query_var('paged')) ? get_query_var('paged') : 1;
-$artists = getMostPopularArtists(20, $paged);
+$artists = recomended_post_type(20, 'artist', my_tags(), $paged);
 
 $tabs = [
     [
-        'title' => 'Popular Songs',
-        'slug' => 'popular',
+        'title' => 'Recommended Songs',
+        'slug' => 'recommended',
     ],
     [
-        'title' => 'Popular Artists',
-        'slug' => 'popular-artists',
+        'title' => 'Recommended Artists',
+        'slug' => 'recommended-artists',
     ],
 ];
 ?>
@@ -21,7 +21,7 @@ $tabs = [
         <div>
             <?php get_template_part('template-parts/artists-grid', null, [
                     'artists' => $artists,
-                    'title' => 'Popular Artists'
+                    'title' => 'Recommended Artists'
                 ]) ?>
         </div>
 

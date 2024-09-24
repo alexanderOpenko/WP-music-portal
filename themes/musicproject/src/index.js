@@ -5,7 +5,7 @@ jQuery(document).ready(function ($) {
         eventsRegistration()
     }
 
-    function eventsRegistration() {
+    function eventsRegistration() {        
         $(document).on('submit', '.tag-form', function (e) {
             submitTagForm(e, $(this));
         });
@@ -212,13 +212,13 @@ jQuery(document).ready(function ($) {
     }
 
     function triggerImageFileInput(target) {
-        target.closest('form').find('input[type="file"]').click()
+        target.closest('.form-wrapper').find('input[type="file"]').click()
     }
 
     function deleteUploadedImage(target) {
-        const imageNameHolder = target.closest('form').find('.uploaded-image-name')
-        const imageInput = target.closest('form').find('input[type="file"]')
-        const imageContainer = target.closest('form').find('.image-container')
+        const imageNameHolder = target.closest('.form-wrapper').find('.uploaded-image-name')
+        const imageInput = target.closest('.form-wrapper').find('input[type="file"]')
+        const imageContainer = target.closest('.form-wrapper').find('.image-container')
 
         imageInput.val('')
         imageContainer.html('')
@@ -227,8 +227,8 @@ jQuery(document).ready(function ($) {
     }
 
     function imageUploadHandler(target, e) {
-        const imageNameHolder = target.closest('form').find('.uploaded-image-name')
-        const imageHolder = target.closest('form').find('.image-holder')
+        const imageNameHolder = target.closest('.form-wrapper').find('.uploaded-image-name')
+        const imageHolder = target.closest('.form-wrapper').find('.image-holder')
         const imageContainer = imageHolder.find('.image-container')
         file = URL.createObjectURL(e.target.files[0])
 

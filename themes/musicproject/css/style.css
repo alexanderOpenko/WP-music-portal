@@ -516,24 +516,28 @@ textarea:not([readonly]) {
   transition: background-color 0.3s;
 }
 
-.menu > li > a:hover {
+.menu li a:hover,
+.mobile-menu .accordion-button:hover {
   background-color: #555;
 }
 
 /* Подменю */
+.mobile-menu a:not(.sub-menu a) {
+  width: 50%;
+}
+
+.menu svg {
+  fill: white
+}
 .sub-menu {
-  top: 100%;
-  left: 0;
-  background-color: #444;
   list-style: none;
   padding: 0;
-  margin: 0 0 0 20px;
 }
 
 .desctop-menu .sub-menu {
   position: absolute;
   display: none;
-
+  background-color: #444;
 }
 
 .sub-menu li {
@@ -621,6 +625,7 @@ textarea:not([readonly]) {
   display: block;
   color: #fff;
   text-decoration: none;
+  margin: 0 0 0 20px;
 }
 
 .visible {
@@ -644,3 +649,159 @@ textarea:not([readonly]) {
 .burger-icon.active span:nth-child(3) {
   transform: rotate(-45deg) translate(5px, -5px);
 }
+
+
+/* formbuilder */
+
+/* Контейнер формы */
+.wppb-user-forms {
+  max-width: 600px;
+  margin: 0 auto;
+  padding: 20px;
+  background-color: #f9f9f9;
+  border-radius: 8px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+}
+
+/* Заголовки секций формы */
+.wppb-form-field h4 {
+  margin-bottom: 15px;
+  font-size: 1.25em;
+  font-weight: 600;
+  color: #333;
+}
+
+/* Поля ввода текста */
+.wppb-form-field input[type="text"],
+.wppb-form-field input[type="email"],
+.wppb-form-field input[type="password"],
+.wppb-form-field textarea {
+  width: 100%;
+  padding: 10px;
+  margin-bottom: 15px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  font-size: 1em;
+  box-sizing: border-box;
+}
+
+/* Множественные строки (textarea) */
+.wppb-form-field textarea {
+  resize: vertical;
+}
+
+/* Лейблы */
+.wppb-form-field label {
+  font-weight: 600;
+  color: #555;
+  display: block;
+  margin-bottom: 5px;
+}
+
+/* Кнопка отправки */
+.form-submit .submit.button {
+  width: 100%;
+  padding: 10px;
+  background-color: #0073aa;
+  color: #fff;
+  border: none;
+  border-radius: 4px;
+  font-size: 1.1em;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.form-submit .submit.button:hover {
+  background-color: #005177;
+}
+
+/* Требуемые поля */
+.wppb-required {
+  color: red;
+  font-weight: bold;
+}
+
+/* Checkbox */
+.wppb-form-field input[type="checkbox"] {
+  margin-right: 10px;
+}
+
+/* Постраничная информация */
+.wppb-user-forms .author-info {
+  margin-top: 20px;
+  color: #777;
+  font-size: 0.9em;
+}
+
+/* Общие отступы для элементов формы */
+.wppb-form-field {
+  margin-bottom: 20px;
+}
+
+/* Мобильная оптимизация */
+@media (max-width: 768px) {
+  .wppb-user-forms {
+    padding: 15px;
+  }
+
+  .wppb-form-field h4 {
+    font-size: 1.1em;
+  }
+}
+
+#wppb_register_pre_form_message {
+  display: none;
+}
+
+
+#basic-user-avatar-form {
+  width: 300px; /* Ширина формы */
+  padding: 15px;
+  border: 1px solid #ccc; /* Граница формы */
+  border-radius: 10px; /* Закругленные углы */
+  background-color: #f9f9f9; /* Цвет фона */
+  box-shadow: 0px 2px 8px rgba(0, 0, 0, 0.1); /* Тень */
+}
+
+#basic-user-avatar-form p {
+  margin: 10px 0;
+}
+
+#basic-local-avatar {
+  display: block;
+  margin: 10px auto;
+}
+
+#basic-user-avatar-erase {
+  margin-right: 5px;
+}
+
+#basic-user-avatar-form label {
+  font-size: 14px;
+  color: #333;
+}
+
+#basic-user-avatar-form .description {
+  font-size: 12px;
+  color: #666;
+  margin-top: 5px;
+}
+
+#basic-user-avatar-form input[type="submit"] {
+  background-color: #0073aa; /* Цвет кнопки */
+  color: white;
+  padding: 10px 20px;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 14px;
+}
+
+#basic-user-avatar-form input[type="submit"]:hover {
+  background-color: #005177; /* Цвет кнопки при наведении */
+}
+
+.avatar {
+  @apply w-24 h-24 rounded-full mx-auto block
+}
+

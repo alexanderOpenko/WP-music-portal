@@ -46,48 +46,98 @@
         </div>
     </div>
 
-    <header class="bg-black p-5 flex items-start justify-end">
-        <div class="mobile-menu-wrapper accordion ml-0 mr-auto my-0 block sm:hidden">
-            <div class="burger-icon accordion-button" id="burgerIcon">
-                <span></span>
-                <span></span>
-                <span></span>
+    <div id="content-container">
+    <header class="p-5 flex items-center justify-between sm:justify-normal sm:items-center justify-end">
+        <div class="mobile-menu-wrapper accordion w-1/3 block sm:hidden">
+            <div class="flex items-center">
+                <div class="burger-icon accordion-button" id="burgerIcon">
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                </div>
+
+                <?php if (is_user_logged_in()) : ?>
+                    <div class="ml-4">
+                        <a href="<?php echo site_url('/profile') ?>"/>
+                            <?php echo get_avatar(get_current_user_id()); ?>
+                        </a>
+                    </div>
+                <?php endif; ?>
             </div>
 
-            <div class="accordion-content invisible">
+            <div class="accordion-content invisible absolute right-0 left-0 top-[78px] z-[6]">
                 <?php wp_nav_menu([
                     'name' => 'menu',
                     'menu_class' => 'menu mobile-menu',
                     'mobile' => true,
                     'add_li_class' => 'accordion'
                 ]) ?>
+
+                <?php if (is_user_logged_in()) : ?>
+                    <ul class="ml-4 menu !block">
+                        <li class="menu-item">
+                            <a href="<?php echo wp_logout_url();  ?>" class="normal-link"> Log Out </a>
+                        </li>
+                    </ul>
+                <?php else : ?>
+                    <ul class="ml-4 menu !block">
+                        <li class="menu-item">
+                            <a href="<?php echo site_url('/login'); ?>" class="normal-link">Login</a>
+                        </li>
+
+                        <li class="menu-item">
+                            <a href="<?php echo site_url('/register'); ?>" class="normal-link">Sign Up</a>
+                        </li>
+                    </ul>
+                <?php endif; ?>
             </div>
         </div>
 
-        <div class="desctop-menu hidden sm:block">
-            <?php wp_nav_menu(['name' => 'menu']) ?>
+        <div class="logo w-1/3 my-0 mr-auto ml-0">
+            <img class="max-w-[150px] sm:max-w-[200px]" src="<?php echo get_template_directory_uri() . '/images/logo-cut.png' ?>" />
         </div>
 
-        <div class="flex items-center gap-2.5">
-            <a href="<?php echo esc_url(site_url('/search')); ?>" class="js-search-trigger site-header__search-trigger">
+        <div class="desctop-menu hidden sm:block">
+            <div class="flex items-center">
+                <a href="<?php echo esc_url(site_url('/search')); ?>" class="js-search-trigger text-[25px] text-black site-header__search-trigger mr-4">
+                    <i class="fa fa-search" aria-hidden="true"></i>
+                </a>
+
+                <?php wp_nav_menu(['name' => 'menu']) ?>
+            </div>
+        </div>
+
+        <div class="gap-2.5 accordion relative hidden sm:block">
+            <div>
+                <?php if (is_user_logged_in()) : ?>
+                    <div class="accordion-button pointer ml-4">
+                        <?php echo get_avatar(get_current_user_id()); ?>
+                    </div>
+
+                    <div class="accordion-content absolute top-[20px] invisible">
+                        <div>
+                            <a href="<?php echo site_url('/eddit-profile') ?>"> 
+                                Profile 
+                            </a>
+                        </div>
+
+                        <div>
+                            <a href="<?php echo wp_logout_url();  ?>" class="normal-link"> Log Out </a>
+                        </div>
+                    </div>
+                <?php else : ?>
+                    <div class="ml-4 flex items-center">
+                        <a href="<?php echo site_url('/login'); ?>" class="normal-link text-black">Login</a>
+                        <div class="h-[25px] w-[1px] mr-[4px] ml-[5px] bg-black"></div>
+                        <a href="<?php echo site_url('/register'); ?>" class="normal-link text-black">Sign Up</a>
+                    </div>
+                <?php endif; ?>
+            </div>
+        </div>
+
+        <div class="w-1/3 sm:hidden flex justify-end">
+            <a href="<?php echo esc_url(site_url('/search')); ?>" class="js-search-trigger text-[25px] text-black site-header__search-trigger">
                 <i class="fa fa-search" aria-hidden="true"></i>
             </a>
-
-            <?php if (is_user_logged_in()) : ?>
-                <span class="text-white">
-                    <a href="<?php echo site_url() ?>">
-                        <?php echo get_avatar(get_current_user_id()); ?>
-                    </a>
-                </span>
-
-                <a href="<?php echo wp_logout_url();  ?>" class="">
-                    <span class="text-white">Log Out</span>
-                </a>
-            <?php else : ?>
-                <a href="<?php echo wp_login_url(); ?>" class="normal-link text-white">Login</a>
-                <a href="<?php echo wp_registration_url(); ?>" class="normal-link text-white">Sign Up</a>
-            <?php endif; ?>
         </div>
     </header>
-
-    <div id="content-container">

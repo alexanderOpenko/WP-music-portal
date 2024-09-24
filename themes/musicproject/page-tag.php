@@ -33,6 +33,7 @@ $userTags = new WP_Query([
             </div>
 
             <div class="accordion-content visible">
+            <div class="form-wrapper">
                 <form class="tag-form">
                     <div class="flex">
                         <div class="max-w-1/2 w-full mr-4">
@@ -65,6 +66,7 @@ $userTags = new WP_Query([
                         </div>
                     </div>
                 </form>
+            </div>
             </div>
         </div>
     </div>
