@@ -12,11 +12,13 @@ $tabs = ARTIST_TABS;
 <div class="content-container">
     <?php get_template_part('template-parts/tab-items', null, ['tabs' => $tabs]);
 
-    if (!is_user_logged_in()) {
-        echo '<div> Only logged in users can upload artists </div>';
-        wp_footer();
+    if (!is_user_logged_in()) : ?>
+        <div class="bg-blue-100 text-blue-900 font-bold px-[20px] py-[10px] border border-blue-200 rounded-lg shadow-md mb-5 text-center">
+            Only logged in users can save artists from search
+        </div>
+    <?php get_footer();
         return;
-    }
+    endif
     ?>
 
     <div class="accordion">
@@ -30,7 +32,7 @@ $tabs = ARTIST_TABS;
         <div class="accordion-content visible">
             <div class="form-wrapper">
                 <form class="artist-form">
-                    <div class="flex">
+                    <div class="flex lg:flex-row flex-col">
                         <div class="max-w-1/2 w-full mr-4">
                             <label for="title">
                                 Name
@@ -55,7 +57,7 @@ $tabs = ARTIST_TABS;
                                 <div class="flex justify-between items-center mb-4">
                                     <?php get_template_part('template-parts/single-accordion-button', null, ['open_name' => 'Add tags', 'close_name' => 'Collapse tags', 'is_open' => false]) ?>
                                 </div>
-                                <div class="accordion-content invisible">
+                                <div class="accordion-content visible">
                                     <label for="tags-select">
                                         <span>
                                             Search for existing tags or create your own. If no suitable tags are found, you can create new ones on the <a class="ajax-link" href="<?php echo site_url('/tag/') ?>">

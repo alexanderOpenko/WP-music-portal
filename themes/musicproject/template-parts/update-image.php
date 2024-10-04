@@ -1,5 +1,5 @@
-<?php if (is_user_logged_in()) : ?>
-    <div class="edit-post-image w-full max-w-2/4 ml-4">
+<?php if (is_user_logged_in() && get_post_field('post_author', $args['ID']) == get_current_user_id()) : ?>
+    <div class="edit-post-image w-full lg:max-w-2/4 max-w-full lg:ml-10">
         <div class="form-wrapper">
             <form class="update-post-image">
                 <input type="hidden" name="post_id" value="<?php echo $args['ID'] ?>" />

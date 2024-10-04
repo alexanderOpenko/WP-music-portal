@@ -8,9 +8,9 @@ $popularTracksWidth = $recomended_tracks->found_posts ? 'half-space' : 'w-full';
 $recomendedTracksWidth = $songs->found_posts ? 'half-space' : 'w-full';
 ?>
 
-<div class="content-container">
+<div class="content-container !max-w-screen-lg">
     <?php if (!is_user_logged_in()) : ?>
-        <div>
+        <div class="bg-blue-100 text-blue-900 font-bold text-[1.2em] px-[20px] py-[10px] border border-blue-200 rounded-lg shadow-md mb-5 text-center">
             Create an account to upload and save your music. Get personalized recommendations based on your favorite tags!
         </div>
     <?php endif ?>
@@ -26,7 +26,7 @@ $recomendedTracksWidth = $songs->found_posts ? 'half-space' : 'w-full';
                     get_template_part('template-parts/songs-list', null, ['songs' => $recomended_tracks]); 
 
                     if ($recomended_tracks->found_posts > 5) {
-                        echo "<a href='" . site_url('/recomended') . "'> View all recomended tracks</a>";
+                        echo "<a href='" . site_url('/recommended') . "' class='underline decoration-1 mt-2 block'> View all recomended tracks</a>";
                     }
                 ?>
             </div>
@@ -43,7 +43,7 @@ $recomendedTracksWidth = $songs->found_posts ? 'half-space' : 'w-full';
                     get_template_part('template-parts/songs-list', null, ['songs' => $songs]); 
 
                     if ($songs->found_posts > 5) {
-                        echo "<a href='" . site_url('/popular') . "'> View all popular tracks</a>";
+                        echo "<a href='" . site_url('/popular') . "' class='underline decoration-1 mt-2 block'> View all popular tracks</a>";
                     }
                     ?>
                 </div>

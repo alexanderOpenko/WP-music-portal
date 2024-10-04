@@ -62,12 +62,14 @@ function allTagsPaginations($data) {
 
 function updateTag($data)
 {
+  print_r($data['tags']);
   $tags = $data['tags'] ?? [];
 
   if ($data['tags']) {
-    add_value_to_field('tag', $tags, $data['post_id']);
+    // add_value_to_field('tag', $tags, $data['post_id']);
+    update_post_meta( $data['post_id'], 'tag', $data['tags']);
   } else {
-    update_post_meta($data['post_id'], 'tag', []);
+    update_post_meta( $data['post_id'], 'tag', []);
   }
 
   return new WP_REST_Response(['post' => get_posts(['post_type' => 'musictag', 'post__in' => $tags, 'posts_per_page' => -1])], 200);

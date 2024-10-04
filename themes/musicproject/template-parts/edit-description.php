@@ -1,7 +1,7 @@
 <?php $textarea_classes = !$args['content'] ? 'hidden' : '' ?>
 
 <?php if ($args['content'] || !$args['content'] && $args['post_author'] === get_current_user_id()) : ?>
-    <div class="mb-8 description-container">
+    <div class="description-container">
         <div class="flex items-center">
             <h2>
                 About

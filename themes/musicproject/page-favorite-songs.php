@@ -16,11 +16,13 @@ $uploaded_songs = new WP_Query([
 <div class="content-container">
     <?php get_template_part('template-parts/tab-items', null, ['tabs' => $tabs]); 
     
-    if (!is_user_logged_in()) {
-        echo '<div> Only logged in users can save songs </div>';
-        wp_footer();
+    if (!is_user_logged_in()) : ?>
+        <div class="bg-blue-100 text-blue-900 font-bold px-[20px] py-[10px] border border-blue-200 rounded-lg shadow-md mb-5 text-center">
+            Only logged in users can save songs from search
+        </div>
+    <?php get_footer();
         return;
-    }
+    endif
     ?>
 
     <div>
@@ -33,8 +35,12 @@ $uploaded_songs = new WP_Query([
             </div>
 
             <div class="accordion-content visible">
+                <div class="bg-blue-100 text-blue-900 font-bold px-[20px] py-[10px] border border-blue-200 rounded-lg shadow-md mb-5 text-center">
+                    Enter the name of an artist you've previously created, or add a new artist name to create one while uploading a new song.
+                </div>
+
                 <form class="song-form">
-                    <div class="flex">
+                    <div class="flex lg:flex-row flex-col">
                         <div class="max-w-1/2 w-full mr-4">
                             <label for="title">
                                 Name
@@ -49,12 +55,12 @@ $uploaded_songs = new WP_Query([
 
                         <div class="max-w-1/2 w-full">
                             <label for="band">
-                                Band
+                                Artist
                             </label>
                             <input name="band" required id="band" class="input" type="text">
 
                             <label for="song-link">
-                                Song youtube link
+                                Song <strong>YOUTUBE</strong> link
                             </label>
                             <input name="song_link" required id="song-link" class="input" type="url">
 
@@ -62,7 +68,7 @@ $uploaded_songs = new WP_Query([
                                 <div class="flex justify-between items-center mb-4">
                                     <?php get_template_part('template-parts/single-accordion-button', null, ['open_name' => 'Add tags', 'close_name' => 'Collapse tags', 'is_open' => false]) ?>
                                 </div>
-                                <div class="accordion-content invisible">
+                                <div class="accordion-content visible">
                                     <label for="tags-select">
                                         <span>
                                             Search for existing tags or create your own. If no suitable tags are found, you can create new ones on the <a class="ajax-link" href="<?php echo site_url('/tag/') ?>">

@@ -11,17 +11,19 @@ $userTags = new WP_Query([
 ?>
 
 <div class="content-container">
-    <?php get_template_part('template-parts/tab-items', null, ['tabs' => $tabs]); 
-    if (!is_user_logged_in()) {
-        echo '<div> Only logged in users can upload tags </div>';
-        wp_footer();
+    <?php get_template_part('template-parts/tab-items', null, ['tabs' => $tabs]);
+    if (!is_user_logged_in()) : ?>
+        <div class="bg-blue-100 text-blue-900 font-bold px-[20px] py-[10px] border border-blue-200 rounded-lg shadow-md mb-5 text-center">
+            Only logged in users can save tags from search
+        </div>
+    <?php get_footer();
         return;
-    }
+    endif
     ?>
 
-    <p>
+    <div class="bg-blue-100 text-blue-900 font-bold px-[20px] py-[10px] border border-blue-200 rounded-lg shadow-md mb-5 text-center">
         Help categorize and classify the music on our site by creating global tags. These tags will be used to describe songs, albums, and bands, making it easier for everyone to discover and explore music.
-    </p>
+    </div>
 
     <div class="p-[10px]">
         <div class="accordion">
@@ -33,40 +35,40 @@ $userTags = new WP_Query([
             </div>
 
             <div class="accordion-content visible">
-            <div class="form-wrapper">
-                <form class="tag-form">
-                    <div class="flex">
-                        <div class="max-w-1/2 w-full mr-4">
-                            <label for="title">
-                                Title
-                            </label>
-                            <input name="title" required class="input" type="text" id="title" />
+                <div class="form-wrapper">
+                    <form class="tag-form">
+                        <div class="flex lg:flex-row flex-col">
+                            <div class="max-w-1/2 w-full mr-4">
+                                <label for="title">
+                                    Title
+                                </label>
+                                <input name="title" required class="input" type="text" id="title" />
 
-                            <label for="content">
-                                Content
-                            </label>
-                            <textarea name="content" id="content" class="input h-[150px]" type="text"></textarea>
-                        </div>
+                                <label for="content">
+                                    Content
+                                </label>
+                                <textarea name="content" id="content" class="input h-[150px]" type="text"></textarea>
+                            </div>
 
-                        <div class="max-w-1/2 w-full">
+                            <div class="max-w-1/2 w-full">
 
-                            <label for="image">
-                                Image
-                            </label>
-                            <?php get_template_part('template-parts/upload-button', null, ['image_name' => 'image_tag']);
-                            get_template_part('template-parts/image-holder');
-                            ?>
+                                <label for="image">
+                                    Image
+                                </label>
+                                <?php get_template_part('template-parts/upload-button', null, ['image_name' => 'image_tag']);
+                                get_template_part('template-parts/image-holder');
+                                ?>
 
-                            <button class="mb-2" type="submit">
-                                submit
-                            </button>
+                                <button class="mb-2" type="submit">
+                                    submit
+                                </button>
 
-                            <div class="message-field">
+                                <div class="message-field">
+                                </div>
                             </div>
                         </div>
-                    </div>
-                </form>
-            </div>
+                    </form>
+                </div>
             </div>
         </div>
     </div>

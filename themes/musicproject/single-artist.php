@@ -12,7 +12,6 @@ while (have_posts()) {
     $image_id = get_field('artist_image', false, false);
     $image_url = get_post_image_custom($image_id, 'full');
     $song_ids = get_field('songs') ? get_field('songs', '', false) : [];
-
     $my_saved_artists = my_saved_items('artist', 'artist', 1, -1)['my_items_ids'];
     $is_saved_artist = false;
 
@@ -33,7 +32,12 @@ while (have_posts()) {
         $save_icon_args['btn_class'] = 'saved-song';
     }
 
-    get_template_part('template-parts/banner', null, ['image_url' => $image_url, 'title' => 'play artist', 'save_icon_args' => $save_icon_args]);
+    get_template_part('template-parts/banner', null, [
+        'image_url' => $image_url,
+        'title' => 'play artist',
+        'save_icon_args' => $save_icon_args,
+        'listens' => get_field('play_count'),
+    ]);
 }
 ?>
 
@@ -44,21 +48,21 @@ while (have_posts()) {
     }
     ?>
 
-    <div class="flex">
-        <div class="w-full max-w-2/4">
-        <?php get_template_part('template-parts/edit-description', null, [
-            'post_type' => 'artist',
-            'post_id' => $ID,
-            'content' => $content,
-            'post_author' => $post_author
-        ]) ?>
+    <div class="flex lg:flex-row flex-col mb-4 border-0 border-b-2 border-solid border-slate-300 pb-6">
+        <div class="w-full lg:max-w-2/4 max-w-full">
+            <?php get_template_part('template-parts/edit-description', null, [
+                'post_type' => 'artist',
+                'post_id' => $ID,
+                'content' => $content,
+                'post_author' => $post_author
+            ]) ?>
         </div>
 
         <?php get_template_part('template-parts/update-image',  null, [
             'field_name' => 'artist_image',
             'image_id' => $image_id,
             'ID' => $ID
-            ]) ?>
+        ]) ?>
     </div>
 
     <div class="accordion">
@@ -85,12 +89,10 @@ while (have_posts()) {
     <?php get_template_part('template-parts/tags-list', null, ['tag_ids' => $tag_ids]) ?>
     <?php get_template_part('template-parts/songs-list-by-id', null, ['song_ids' => $song_ids, 'data_attribute' => 'data-artist']) ?>
 
-    <?php if ($artists->have_posts()) : ?>
-    <?php get_template_part('template-parts/artists-grid', null, [
-      'artists' => $artists,
-      'title' => 'Similar artists'
+    <?php get_template_part('template-parts/similar-artists', null, [
+        'artists' => $artists,
+        'current_artist' => $ID
     ]) ?>
-  <?php endif ?>
 </div>
 
 <?php get_footer(); ?>

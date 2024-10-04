@@ -9,11 +9,22 @@ $saved_artists = my_saved_items('artist', 'artist', $paged, 15)['saved_items'];
 <div class="content-container">
     <?php get_template_part('template-parts/tab-items', null, ['tabs' => $tabs]);
 
-    if (!is_user_logged_in()) {
-        echo '<div> Only logged in users can save artists from search</div>';
-        wp_footer();
+    if (!is_user_logged_in()) : ?>
+        <div class="bg-blue-100 text-blue-900 font-bold px-[20px] py-[10px] border border-blue-200 rounded-lg shadow-md mb-5 text-center">
+            Only logged in users can save artists from search
+        </div>
+    <?php get_footer();
         return;
-    }
+    endif
+    ?>
+
+    <?php if (is_user_logged_in() && !$saved_artists->found_posts) : ?>
+        <div class="bg-blue-100 text-blue-900 font-bold px-[20px] py-[10px] border border-blue-200 rounded-lg shadow-md mb-5 text-center">
+            Discover artists through search and save them
+        </div>
+    <?php get_footer();
+        return;
+    endif
     ?>
 
     <?php if ($saved_artists->found_posts) : ?>

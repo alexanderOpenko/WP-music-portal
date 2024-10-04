@@ -28,12 +28,24 @@ function getSavedSongs($data)
     $saved_songs = my_saved_items('songs', 'song', $data['page'], 15)['saved_items'];
 
     $songs = array_map(function ($post) {
+        $my_saved_songs = my_saved_items('songs', 'song', 1, -1)['my_items_ids'];
+        $is_saved_song = false;
+
+        if (in_array($post->ID, $my_saved_songs)) {
+            $is_saved_song = true;
+        }
+
         return [
             'ID' => $post->ID,
             'song_link' => get_field('song_link', $post->ID)['url'],
             'band' => get_field('band', $post->ID),
             'link' => get_permalink($post->ID),
-            'title' => $post->post_title
+            'artist_link' => get_permalink(get_field('artist', $post->ID)[0]),
+            'author_link' => site_url('/user-profile?user_id=' . $post->post_author),
+            'author_name' => get_the_author_meta('display_name', $post->post_author),
+            'author_id' => $post->post_author,            
+            'title' => $post->post_title,
+            'is_saved_song' => $is_saved_song
         ];
     }, $saved_songs->posts);
 
@@ -94,13 +106,13 @@ function createSong($data)
             'post_content' => $data['content'],
             'meta_input' => [
                 'artist' => [$artist_id],
-                'tag' => [$data['tags']],
+                'tag' => explode(',', $data['tags']),
                 'song_link' => ['url' => $data['song_link']],
                 'band' => $data['band']
             ]
         ], true);
 
-        updateUserTags($data['tags']);
+        updateUserTags(explode(',',$data['tags']));
 
         $postQuery = new WP_query([
             'post_type' => 'song',
@@ -109,12 +121,24 @@ function createSong($data)
 
         //for rest api response
         $post = array_map(function ($post) {
+            $my_saved_songs = my_saved_items('songs', 'song', 1, -1)['my_items_ids'];
+            $is_saved_song = false;
+
+            if (in_array($post->ID, $my_saved_songs)) {
+                $is_saved_song = true;
+            }
+
             return [
                 'ID' => $post->ID,
                 'song_link' => get_field('song_link', $post->ID)['url'],
                 'band' => get_field('band', $post->ID),
+                'artist_link' => get_permalink(get_field('artist', $post->ID)[0]),
+                'author_link' => site_url('/user-profile?user_id=' . $post->post_author),
+                'author_name' => get_the_author_meta('display_name', $post->post_author),
+                'author_id' => $post->post_author,
                 'link' => get_permalink($post->ID),
-                'title' => $post->post_title
+                'title' => $post->post_title,
+                'is_saved_song' => $is_saved_song
             ];
         }, $postQuery->posts);
 

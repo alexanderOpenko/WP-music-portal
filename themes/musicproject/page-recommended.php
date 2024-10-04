@@ -1,7 +1,8 @@
 <?php get_header();
 $paged = (get_query_var('paged')) ? get_query_var('paged') : 1;
 $my_tags = my_tags();
-$songs = recomended_post_type(20, 'song', $my_tags);
+$songs = recomended_post_type(20, 'song', $my_tags, $paged);
+
 $tabs = [
     [
         'title' => 'Recomended Songs',
@@ -17,7 +18,7 @@ $tabs = [
 <div class="content-container">
     <?php get_template_part('template-parts/tab-items', null, ['tabs' => $tabs]); ?>
 
-    <?php if ($songs) : ?>
+    <?php if ($songs->found_posts) : ?>
         <h1>
             Recomended tracks
         </h1>
@@ -36,6 +37,10 @@ $tabs = [
         ]);
 
         ?>
+        </div>
+    <?php else : ?>
+        <div class="bg-blue-100 text-blue-900 font-bold text-[1.2em] px-[20px] py-[10px] border border-blue-200 rounded-lg shadow-md mb-5 text-center">
+        There are no recommendations yet. Please save songs/tags from your search or create tags to receive music suggestions.
         </div>
     <?php endif ?>
 </div>

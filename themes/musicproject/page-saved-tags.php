@@ -7,13 +7,24 @@ $saved_tags = my_saved_items('tag', 'musictag', $paged, 15)['saved_items'];
 ?>
 
 <div class="content-container">
-    <?php get_template_part('template-parts/tab-items', null, ['tabs' => $tabs]); 
+    <?php get_template_part('template-parts/tab-items', null, ['tabs' => $tabs]);
 
-    if (!is_user_logged_in()) {
-        echo '<div> Only logged in users can save tags </div>';
-        wp_footer();
+    if (!is_user_logged_in()) : ?>
+        <div class="bg-blue-100 text-blue-900 font-bold px-[20px] py-[10px] border border-blue-200 rounded-lg shadow-md mb-5 text-center">
+            Only logged in users can save tags from search
+        </div>
+    <?php get_footer();
         return;
-    }
+    endif;
+    ?>
+
+<?php if (is_user_logged_in() && !$saved_tags->found_posts) : ?>
+        <div class="bg-blue-100 text-blue-900 font-bold px-[20px] py-[10px] border border-blue-200 rounded-lg shadow-md mb-5 text-center">
+            Discover tags through search and save them, or save songs to display their tags in this tab
+        </div>
+        <?php get_footer();
+        return;
+    endif
     ?>
 
     <?php if ($saved_tags->found_posts) : ?>

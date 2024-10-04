@@ -5,26 +5,36 @@ jQuery(document).ready(function ($) {
         eventsRegistration()
     }
 
-    function eventsRegistration() {        
+    function eventsRegistration() {     
+        $(document).on('click', '.block-js', function() {
+            $('body').css('overflow-y', 'hidden')
+            $('.block-overlay').show()
+        })
+
+        $(document).on('click', '.unblock-js', function() {
+            $('body').css('overflow-y', 'auto')
+            $('.block-overlay').hide()
+        })
+
         $(document).on('submit', '.tag-form', function (e) {
-            submitTagForm(e, $(this));
-        });
+            submitTagForm(e, $(this))
+        })
 
         $(document).on('submit', '.update-song-tag', function (e) {
-            submitUpdateTag(e, $(this));
-        });
+            submitUpdateTag(e, $(this))
+        })
 
         $(document).on('submit', '.edit-post-description', function (e) {
-            submitUpdateCustomPostContent(e, $(this));
-        });
+            submitUpdateCustomPostContent(e, $(this))
+        })
 
         $(document).on('submit', '.song-form', function (e) {
-            submitSongForm(e, $(this));
-        });
+            submitSongForm(e, $(this))
+        })
 
         $(document).on('submit', '.artist-form', function (e) {
-            submitArtistForm(e, $(this));
-        });
+            submitArtistForm(e, $(this))
+        })
 
         $(document).on('click', 'a', function (e) {
             ajaxLinkHandler(e, $(this))
@@ -32,7 +42,7 @@ jQuery(document).ready(function ($) {
 
         $(window).bind('popstate', function (e) {
             ajaxLinkHandler(e, null, window.location.href, true)
-        });
+        })
 
         $(document).on('click', '.upload-song-page-js', function (e) {
             handleUploadedSongs($(this))
@@ -56,19 +66,19 @@ jQuery(document).ready(function ($) {
 
         $(document).on('click', '.accordion-button', function (e) {
             accordeonToggler($(this))
-        });
+        })
 
         $(document).on('change', 'input[type="file"]', function (e) {
             imageUploadHandler($(this), e)
-        });
+        })
 
         $(document).on('click', '.delete-upload-image', function (e) {
             deleteUploadedImage($(this), e)
-        });
+        })
 
         $(document).on('click', '.upload-image-button-js', function (e) {
             triggerImageFileInput($(this), e)
-        });
+        })
 
         $(document).on('click', '.delete-song', function () {
             deleteContentHandler($(this))
@@ -90,7 +100,7 @@ jQuery(document).ready(function ($) {
             handleUpdateImage(e, $(this))
         })
 
-        $.data(document, 'eventsHandlerAttached', true);
+        $.data(document, 'eventsHandlerAttached', true)
     }
 
     async function handleUpdateImage(e, form) {
@@ -131,6 +141,7 @@ jQuery(document).ready(function ($) {
         e.preventDefault()
         const data = new FormData(form[0])
 
+        $('.spinner-js').removeClass('hidden')
         try {
             const resp = await fetch(musicData.root_url + "/wp-json/music/v1/updateCustomPostContent", {
                 method: 'POST',
@@ -144,8 +155,11 @@ jQuery(document).ready(function ($) {
                 $('.edit-description-js').click()
             }
         } catch {
+            $('.spinner-js').addClass('hidden')
+
             alert('something went wrong')
         }
+        $('.spinner-js').addClass('hidden')
     }
 
     async function saveSubmitHandler(e, form) {
@@ -161,11 +175,11 @@ jQuery(document).ready(function ($) {
                 headers: {
                     "X-WP-Nonce": musicData.nonce,
                 }
-            });
-            const json = await resp.json();
+            })
+            const json = await resp.json()
 
             if (!resp.ok) {
-                throw new Error(json.message);
+                throw new Error(json.message)
             } else {
                 if (action === 'save') {
                     bookmarkBtn.addClass('saved-song')
@@ -204,7 +218,7 @@ jQuery(document).ready(function ($) {
                     target.closest('.song-item').remove()
                 }
             } catch (e) {
-                console.log(e);
+                console.log(e)
 
                 alert('Something went wrong')
             }
@@ -242,7 +256,7 @@ jQuery(document).ready(function ($) {
     }
 
     function accordeonToggler(target) {
-        const $content = target.closest('.accordion').find('.accordion-content').first();
+        const $content = target.closest('.accordion').find('.accordion-content').first()
     
             /**
          * Custom function to toggle accordion visibility without using jQuery's built-in slide or fade methods.
@@ -260,19 +274,19 @@ jQuery(document).ready(function ($) {
         function toggleVisibility(element) {
             if (element.hasClass('visible')) {
                 // Скрытие: высота 0 и добавление класса "invisible"
-                element.addClass('invisible').removeClass('visible').css('height', 0);
-                target.find('.button-open-text').show();
-                target.find('.button-close-text').hide();
-                element.find('.accordion-content').addClass('invisible').removeClass('visible').css('height', 0);
+                element.addClass('invisible').removeClass('visible').css('height', 0)
+                target.find('.button-open-text').show()
+                target.find('.button-close-text').hide()
+                element.find('.accordion-content').addClass('invisible').removeClass('visible').css('height', 0)
             } else {
                 // Отображение: убираем класс "invisible" и устанавливаем "visible"
-                element.removeClass('invisible').addClass('visible').css('height', 'auto');
-                target.find('.button-open-text').hide();
-                target.find('.button-close-text').show();
+                element.removeClass('invisible').addClass('visible').css('height', 'auto')
+                target.find('.button-open-text').hide()
+                target.find('.button-close-text').show()
             }
         }
     
-        toggleVisibility($content);
+        toggleVisibility($content)
     }
 
 
@@ -281,27 +295,27 @@ jQuery(document).ready(function ($) {
     }
 
     function normalizeArtistName(name) {
-        name = name.trim();
-        name = name.toLowerCase();
+        name = name.trim()
+        name = name.toLowerCase()
 
-        const symbolsToRemove = ['@', '$', '&', '#', '!', '*', '(', ')'];
+        const symbolsToRemove = ['@', '$', '&', '#', '!', '*', '(', ')']
         symbolsToRemove.forEach(symbol => {
-            name = name.split(symbol).join('');
-        });
+            name = name.split(symbol).join('')
+        })
 
-        name = name.replace(/[^a-z0-9\s]/g, '');
-
-        return name;
+        return name
     }
 
     //submit song
     async function submitArtistForm(e, form) {
         e.preventDefault()
-        const messageField = form.find('.message-field');
-        const data = new FormData(form[0]);
+        const messageField = form.find('.message-field')
+        const data = new FormData(form[0])
 
         const name = normalizeArtistName(data.get('band'))
         data.set('band', name)
+
+        $('.spinner-js').removeClass('hidden')
 
         try {
             const resp = await fetch(musicData.root_url + "/wp-json/music/v1/createArtist", {
@@ -310,38 +324,47 @@ jQuery(document).ready(function ($) {
                 headers: {
                     "X-WP-Nonce": musicData.nonce,
                 }
-            });
-            const json = await resp.json();
+            })
+            const json = await resp.json()
 
             if (!resp.ok) {
-                throw new Error(json.message);
+                throw new Error(json.message)
             } else {
                 messageField.show()
-                messageField.text("Artist created");
-                messageField.removeClass("error-message").addClass("success-message");
+                messageField.text("Artist created")
+                messageField.removeClass("error-message").addClass("success-message")
                 const container = $(".artists-list")
                 container.prepend(baseCardNode(json.post))
                 form[0].reset()
             }
         } catch (error) {
+            $('.spinner-js').addClass('hidden')
+
             messageField.show()
-            messageField.text(error.message);
-            messageField.removeClass("success-message").addClass("error-message");
+            messageField.text(error.message)
+            messageField.removeClass("success-message").addClass("error-message")
         }
+        $('.spinner-js').addClass('hidden')
 
         setTimeout(() => messageField.hide(), 3000)
     }
 
     async function submitSongForm(e, form) {
-        e.preventDefault();
-        const messageField = form.find('.message-field');
-        const data = new FormData(form[0]);
+        e.preventDefault()
+        const youtubeUrlRegex = /^(https?:\/\/)?(www\.)?(youtube\.com\/watch\?v=|youtu\.be\/)[\w\-]{11}(&.*)?$/;
+        const messageField = form.find('.message-field')
+        const data = new FormData(form[0])
 
-        const tags = [];
+        if (!youtubeUrlRegex.test(data.get('song_link'))) {
+            alert('The input must strictly be a valid YouTube video link. Make sure it follows the standard format for YouTube video URLs.')
+            return
+        }
+
+        const tags = []
 
         for (const [key, value] of data.entries()) {
             if (key.startsWith('tags')) {
-                tags.push(value);
+                tags.push(value)
             }
         }
 
@@ -351,6 +374,8 @@ jQuery(document).ready(function ($) {
         data.delete('tags')
         data.append('tags', tags)
 
+        $('.spinner-js').removeClass('hidden')
+
         try {
             const resp = await fetch(musicData.root_url + "/wp-json/music/v1/createSong", {
                 method: "POST",
@@ -358,32 +383,36 @@ jQuery(document).ready(function ($) {
                 headers: {
                     "X-WP-Nonce": musicData.nonce,
                 }
-            });
-            const json = await resp.json();
+            })
+            const json = await resp.json()
 
             if (!resp.ok) {
-                throw new Error(json.message);
+                throw new Error(json.message)
             } else {
                 messageField.show()
-                messageField.text("Song created");
-                messageField.removeClass("error-message").addClass("success-message");
+                messageField.text("Song created")
+                messageField.removeClass("error-message").addClass("success-message")
                 const container = $(".favsongs-page-list")
                 container.prepend(songNode(json.post))
                 form[0].reset()
             }
         } catch (error) {
+            $('.spinner-js').addClass('hidden')
+
             messageField.hide()
-            messageField.text(error.message);
-            messageField.removeClass("success-message").addClass("error-message");
+            messageField.text(error.message)
+            messageField.removeClass("success-message").addClass("error-message")
         }
+        $('.spinner-js').addClass('hidden')
 
         setTimeout(() => messageField.hide(), 3000)
     }
 
     async function submitUpdateTag(e, form) {
         e.preventDefault()
-        const data = new FormData(form[0]);
+        const data = new FormData(form[0])
 
+        $('.spinner-js').removeClass('hidden')
         try {
             const resp = await fetch(musicData.root_url + "/wp-json/music/v1/updateTag", {
                 method: "POST",
@@ -391,21 +420,26 @@ jQuery(document).ready(function ($) {
                 headers: {
                     "X-WP-Nonce": musicData.nonce,
                 }
-            });
+            })
 
             if (resp.ok) {
                 window.location.reload()
             }
         } catch (e) {
-            console.log(e);
+            $('.spinner-js').addClass('hidden')
+            console.log(e)
         }
+        $('.spinner-js').addClass('hidden')
+
     }
 
     //submit tag
     async function submitTagForm(e, form) {
-        e.preventDefault();
-        const messageField = form.find('.message-field');
-        const data = new FormData(form[0]);
+        e.preventDefault()
+        const messageField = form.find('.message-field')
+        const data = new FormData(form[0])
+
+        $('.spinner-js').removeClass('hidden')               
 
         try {
             const resp = await fetch(musicData.root_url + "/wp-json/music/v1/manageTag", {
@@ -414,25 +448,27 @@ jQuery(document).ready(function ($) {
                 headers: {
                     "X-WP-Nonce": musicData.nonce,
                 }
-            });
-            const json = await resp.json();
-            console.log(json, 'json');
+            })
+            const json = await resp.json()
+            console.log(json, 'json')
 
             if (!resp.ok) {
-                throw new Error(json.message);
+                throw new Error(json.message)
             } else {
-                messageField.text("tag created");
-                messageField.removeClass("error-message").addClass("success-message");
+                messageField.text("tag created")
+                messageField.removeClass("error-message").addClass("success-message")
 
                 const container = $(".tags-list")
                 container.prepend(baseCardNode(json.post))
             }
         } catch (error) {
-            messageField.text(error.message);
-            messageField.removeClass("success-message").addClass("error-message");
+            $('.spinner-js').addClass('hidden')
+            messageField.text(error.message)
+            messageField.removeClass("success-message").addClass("error-message")
         }
+        $('.spinner-js').addClass('hidden')
     }
-    // Делегируем событие click на документ
+
     async function ajaxLinkHandler(e, target, urlParam = null, isPopState = false) {
         if (target && target.hasClass('normal-link')) {
             return
@@ -441,15 +477,12 @@ jQuery(document).ready(function ($) {
         if (target && window.location.href == target.attr('href')) {
             e.preventDefault()
             return
-        }
-
-        console.log(target, 'target');
-        
+        }        
 
         e.preventDefault()
 
-        $('.spinner-js').removeClass('hidden')
-        const url = urlParam ?? target.attr('href');
+        $('.spinner-js').removeClass('hidden')         
+        const url = urlParam ?? target.attr('href')
 
         try {
             const resp = await fetch(url)
@@ -457,14 +490,14 @@ jQuery(document).ready(function ($) {
             if (!resp.ok) {
                 throw new Error()
             } else {
-                const data = await resp.text();
+                const data = await resp.text()
                 
-                const tempElement = $('<div>').html(data);
-                const contentData = tempElement.find('#content-container').html();
-                $('#content-container').html(contentData);
+                const tempElement = $('<div>').html(data)
+                const contentData = tempElement.find('#content-container').html()
+                $('#content-container').html(contentData)
 
                 if (!isPopState) {
-                    history.pushState(null, '', url);
+                    history.pushState(null, '', url)
                 }
                 $('.spinner-js').addClass('hidden')
             }
@@ -496,7 +529,7 @@ jQuery(document).ready(function ($) {
                     "X-WP-Nonce": musicData.nonce,
                 }
             })
-            const json = await resp.json();
+            const json = await resp.json()
 
             if (!resp.ok) {
                 throw new Error()
@@ -521,7 +554,7 @@ jQuery(document).ready(function ($) {
                     target.hide()
                 }
 
-                target.attr('data-page', $pageData + 1);
+                target.attr('data-page', $pageData + 1)
             }
         } catch {
             alert('Something went wrong')
@@ -536,10 +569,10 @@ jQuery(document).ready(function ($) {
 
         try {
             const resp = await fetch(musicData.root_url + `/wp-json/music/v1/uploadedArtistsPaginations?page=${$pageData}`)
-            const json = await resp.json();
+            const json = await resp.json()
 
             if (!resp.ok) {
-                throw new Error(json.message);
+                throw new Error(json.message)
             } else {
                 const container = $('.artists-list')
 
@@ -564,10 +597,10 @@ jQuery(document).ready(function ($) {
 
         try {
             const resp = await fetch(musicData.root_url + `/wp-json/music/v1/allTagsPaginations?page=${$pageData}`)
-            const json = await resp.json();
+            const json = await resp.json()
 
             if (!resp.ok) {
-                throw new Error(json.message);
+                throw new Error(json.message)
             } else {
                 const container = $('.tags-list')
 
@@ -580,7 +613,7 @@ jQuery(document).ready(function ($) {
                 }
             }
         } catch (e) {
-            console.log(e, 'eee');
+            console.log(e, 'eee')
             
             alert ('Something went wrong')
         }
@@ -594,10 +627,10 @@ jQuery(document).ready(function ($) {
 
         try {
             const resp = await fetch(musicData.root_url + `/wp-json/music/v1/allArtistsPaginations?page=${$pageData}`)
-            const json = await resp.json();
+            const json = await resp.json()
 
             if (!resp.ok) {
-                throw new Error(json.message);
+                throw new Error(json.message)
             } else {
                 const container = $('.artists-list')
 
@@ -621,7 +654,7 @@ jQuery(document).ready(function ($) {
         const $tag = target.attr('data-tag') ? parseInt(target.attr('data-tag')) : false
         const $is_all_songs = target.attr('data-all-songs') ?? false
 
-        target.attr('data-page', $pageData + 1);
+        target.attr('data-page', $pageData + 1)
 
         let url = musicData.root_url + `/wp-json/music/v1/songsPaginations?page=${$pageData}`
 
@@ -639,12 +672,12 @@ jQuery(document).ready(function ($) {
                 headers: {
                     "X-WP-Nonce": musicData.nonce,
                 }
-            });
+            })
 
-            const json = await resp.json();
+            const json = await resp.json()
 
             if (!resp.ok) {
-                throw new Error(json.message);
+                throw new Error(json.message)
             } else {
                 const container = $('.songs-list')
 
@@ -657,26 +690,36 @@ jQuery(document).ready(function ($) {
                 }
             }
         } catch (error) {
-            console.log(error, 'error');
+            console.log(error, 'error')
             alert('something went wrong')
-            // messageField.text(error.message);
-            // messageField.removeClass("success-message").addClass("error-message");
+            // messageField.text(error.message)
+            // messageField.removeClass("success-message").addClass("error-message")
         }
     }
 
     function songNode(post) {
-        return `<div class="song-item relative flex py-3 px-4 items-center justify-between border-0 border-b border-solid border-slate-300">
+        console.log(post, 'post')
+        
+        let songStr = `<div class="song-item relative flex py-3 items-center justify-between border-0 border-b border-solid border-slate-300">
                     <div class="flex items-center">
                         <button class="song-play chartlist-play-button" data-song-id=${post.ID} data-song-link="${post.song_link.replace(/[, ]/g, '')}">
                         </button>
-                        <h3 class="m-0 !ml-5">
-                            <a class="ajax-link" href="${post.link}">
-                                ${post.band} - ${post.title}
+
+                        <h3 class="m-0 !ml-5 sm:text-lg text-basesearch-overlay--active">
+                            <a class="underline" href="${post.artist_link}">
+                                ${post.band}
+                            </a>
+                            -
+                            <a class="underline" href="${post.link}">
+                                ${post.title}
                             </a>
                         </h3>
-                    </div>
+                    </div>`
+ 
+                    songStr += `<div class="flex items-center max-w-[30%] w-full justify-end ml-2">`
 
-                        <div class="icon delete-song" data-song-id=${post.ID} data-song-name=${post.title}">
+                    if (musicData.logged_user_id === post.author_id) {
+                        songStr += `<div class="icon delete-song" data-song-id=${post.ID} data-song-name=${post.title}">
                             <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" fill="#000000" version="1.1" id="Capa_1" width="800px" height="800px" viewBox="0 0 482.428 482.429" xml:space="preserve">
                                 <g>
                                     <g>
@@ -687,20 +730,44 @@ jQuery(document).ready(function ($) {
                                     </g>
                                 </g>
                             </svg>
-                        </div>
-                </div>`
+                        </div>`
+                    } else {
+                        songStr += `<div class="sm:text-sm text-xs text-slate-500">
+                            uploaded by 
+                            <a href="${post.author_link}">
+                                ${post.authorName}
+                            </a>
+                        </div>`
+                    }    
+
+                        songStr += `<form class="save-icon-form">
+                        <input name="post_id" type="hidden" value="${post.ID}"/>
+                        <input name="action" type="hidden" value="${post.is_saved_song ? 'unsave' : 'save'}"/>
+                        <input name="type" type="hidden" value="song"/>
+                        
+                        <button
+                            class="save-icon-btn !mt-0 sm:ml-4 ml-2 ${post.is_saved_song ? 'saved-song' : ''}"
+                            type="submit"
+                        >
+                        </button>
+                    </form>`
+    
+                songStr += `</div>`
+            return songStr
     }
 
     function baseCardNode(post) {
         return `
-            <div class="artist-card flex flex-col">
-                <div class="artist-card_image relative pt-[100%]">
-                    <img class="full-absolute object-cover" src="${post.image_link}"/>
-                </div>
+            <div class="card flex flex-col relative">
+                <a href="${post.link}" class="full-absolute z-10 ajax-link">
+                </a>
+                    <div class="artist-card_image relative pt-[100%]">
+                        <img class="full-absolute object-cover" src="${post.image_link}"/>
+                    </div>
 
-                <div class="artist-card_info">
-                    ${post.title}
-                </div>
+                    <div class="artist-card_info card_info p-3 bg-gray-100 text-gray-600 capitilize border border-solid border-gray-300">
+                        ${post.title}
+                    </div>
             </div>
         `
     }
@@ -742,10 +809,10 @@ jQuery(document).ready(function ($) {
                         return callback()
                     } catch (error) {
                         alert('something went wrong')
-                        // this.clearOptions();
-                        // ;
+                        // this.clearOptions()
+                        // 
                     } finally {
-                        $('#spinner').hide();
+                        $('#spinner').hide()
                     }
                 } else {
                     $('.tags-select-wrapper').find('.select-message-field').removeClass('error-message').text('')
@@ -754,38 +821,38 @@ jQuery(document).ready(function ($) {
                 return callback()
             },
             onType: function (value) {
-                console.log(value, 'value');
+                console.log(value, 'value')
 
                 if (!value) {
-                    console.log('no value');
+                    console.log('no value')
 
-                    this.addOption(defaultOptions);
+                    this.addOption(defaultOptions)
                     $('.tags-select-wrapper').find('.select-message-field').removeClass('error-message').text('')
 
-                    this.refreshOptions(false);
+                    this.refreshOptions(false)
                 }
             },
             onItemAdd: function () {
                 setTimeout(() => {
-                    this.focus(); // Устанавливаем фокус на поле ввода после открытия
-                }, 10);
+                    this.focus() // Устанавливаем фокус на поле ввода после открытия
+                }, 10)
             },
             onBlur: function () {
                 $('.selectize-dropdown').show()
             },
             onInitialize: function () {
-                this.open();
-                this.blur();
+                this.open()
+                this.blur()
             }
         })[0].selectize
 
         $(document).on('click', '.selectize-input', function (e) {
-            selectizeInstance.focus();
-        });
+            selectizeInstance.focus()
+        })
 
-        console.log(selectizeInstance, 'selectizeInstance');
+        console.log(selectizeInstance, 'selectizeInstance')
 
-        // $(".selectize-dropdown").show();
+        // $(".selectize-dropdown").show()
     }
 
 
@@ -808,11 +875,11 @@ jQuery(document).ready(function ($) {
 
         // 2. events
         events() {
-            this.openButton.on("click", this.openOverlay.bind(this))
-            this.closeButton.on("click", this.closeOverlay.bind(this))
-            $(document).on("keydown", this.keyPressDispatcher.bind(this))
-            this.searchField.on("keyup", this.typingLogic.bind(this))
-            $(document).on("click", ".search-overlay a", this.closeOverlay.bind(this))
+            $("body").on("click", ".js-search-trigger", this.openOverlay.bind(this));
+            $("body").on("click", ".search-overlay__close", this.closeOverlay.bind(this));
+            $(document).on("keydown", this.keyPressDispatcher.bind(this));
+            $("body").on("keyup", "#search-term", this.typingLogic.bind(this));
+            $("body").on("click", ".search-overlay a", this.closeOverlay.bind(this));
         }
 
         // 3. methods (function, action...)
@@ -838,7 +905,7 @@ jQuery(document).ready(function ($) {
         getResults() {
             $.getJSON(musicData.root_url + "/wp-json/music/v1/search?term=" + this.searchField.val(), results => {
                 this.resultsDiv.html(`
-                <div class="row">
+                <div class="row lg:flex block">
                     <div class="one-third songs">
                         <h2 class="search-overlay__section-title">Songs</h2>
                         ${results.song.length ? '<ul class="link-list min-list">' :
@@ -861,7 +928,7 @@ jQuery(document).ready(function ($) {
                         `<div class="search-no-results">No artists matches that search.</div> <a class="ajax-link" href="${musicData.root_url}/artists">View all artists</a>`}
                         ${results.artist.map(item => `<li><a class="ajax-link" href="${item.permalink}">${item.title}</a></li>`).join("")}
                         ${results.artist.length ? "</ul>" : ""}
-                        ${results.artist.length > 0 ? `<a class="ajax-link" href="${musicData.root_url}/search-results?type=artist&ids=${results.artist_ids}">View all searching artists</a>` : ''}
+                        ${results.artist.length > 7 ? `<a class="ajax-link" href="${musicData.root_url}/search-results?type=artist&ids=${results.artist_ids}">View all searching artists</a>` : ''}
                     </div>
                 </div>
             `)
@@ -899,17 +966,17 @@ jQuery(document).ready(function ($) {
             $("body").append(`
                 <div class="search-overlay">
                     <div class="search-overlay__top">
-                        <i style="padding: 0 15px;" class="fa fa-search search-overlay__icon" aria-hidden="true"></i>
+                        <i style="padding: 0 15px" class="fa fa-search search-overlay__icon" aria-hidden="true"></i>
                         <div>
                         <input type="text" class="search-term" placeholder="What are you looking for?" id="search-term">
                         </div>
                         <div>
-                        <i style="padding: 0 15px; background: transparent" class="fa fa-window-close search-overlay__close" aria-hidden="true"></i>
+                        <i style="padding: 0 15px background: transparent" class="fa fa-window-close search-overlay__close" aria-hidden="true"></i>
                         </div>
                         </div>
                     
-                    <div class="content-container">
-                        <div id="search-overlay__results"></div>
+                    <div class="content-container huy">
+                        <div id="search-overlay__results huy"></div>
                     </div>
                 </div>
             `)
@@ -917,16 +984,18 @@ jQuery(document).ready(function ($) {
     }
     const search = new Search()
 
-});
+})
 
 function onYouTubeIframeAPIReady() {
     jQuery(document).ready(function ($) {
-        var player;
+        var player
 
         $(document).on('click', '.song-play', function () {
             $this = $(this)
             $('.close-video-js').show()
-            $('.youtube-video').css('z-index', 1000)
+            $('.youtube-video').css('z-index', 999)
+            $('body, .search-overlay .content-container').css('margin-bottom', '350px');
+            $('html').css('height', 'auto')
 
             $(document).on('click', '.close-video-js', function () {
                 player.stopVideo()
@@ -935,16 +1004,18 @@ function onYouTubeIframeAPIReady() {
 
                 $(this).hide()
                 $('.youtube-video').css('z-index', -1)
+                $('body', '.search-overlay .content-container').css('margin-bottom', 0)
+                $('html').css('height', '100%')
             })
 
             const dataLink = $(this).data('song-link').replace(' ,', '')
-            const urlObj = new URL(dataLink);
-            var videoId = urlObj.searchParams.get("v");
+            const urlObj = new URL(dataLink)
+            var videoId = urlObj.searchParams.get("v")
 
-            createPlayer(videoId);
+            createPlayer(videoId)
 
             function createPlayer(videoId) {
-                const allSongsOnPage = $('.song-item');
+                const allSongsOnPage = $('.song-item')
                 const index = allSongsOnPage.index($this.closest('.song-item'))
 
                 if (index + 1 === allSongsOnPage.length) {
@@ -958,14 +1029,14 @@ function onYouTubeIframeAPIReady() {
                             'onReady': onPlayerReady,
                             'onStateChange': onPlayerStateChange
                         }
-                    });
+                    })
                 } else {
                     player.loadVideoById(videoId)
                 }
             }
 
             function onPlayerReady(event) {
-                event.target.playVideo();
+                event.target.playVideo()
             }
 
             function onPlayerStateChange(event) {
@@ -976,19 +1047,19 @@ function onYouTubeIframeAPIReady() {
                         }
                     })
 
-                    const nextSongItem = $this.closest('.song-item').next('.song-item').find('.song-play');
+                    const nextSongItem = $this.closest('.song-item').next('.song-item').find('.song-play')
 
                     if (!nextSongItem.length) {
                         return
                     }
 
-                    const nextSongLink = new URL(nextSongItem.attr('data-song-link'));
-                    var videoId = nextSongLink.searchParams.get("v");
+                    const nextSongLink = new URL(nextSongItem.attr('data-song-link'))
+                    var videoId = nextSongLink.searchParams.get("v")
                     player.loadVideoById(videoId)
 
                     $this = nextSongItem
                 }
             }
-        });
+        })
     })
 }

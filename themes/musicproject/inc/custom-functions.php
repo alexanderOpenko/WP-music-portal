@@ -71,7 +71,7 @@ function my_saved_items(string $field_type, string $post_type, int $paged, int $
 
     $my_items_ids = !empty($my_items_post_id) ? array_values((array) get_field($field_type, $my_items_post_id[0])) : [];
 
-    $saved_items = null;
+    $saved_items = new WP_Query();
     if (!empty($my_items_ids)) {
         $saved_items = new WP_Query([
             'post_type' => $post_type,
@@ -194,6 +194,11 @@ function updateUserSavedItems(array|int|string $item_id, string $action, string 
         'posts_per_page' => 1
     ]);
 
+    if (($post_type === 'artist' || $post_type === 'songs') && $action === 'save') {
+        $tags = get_field('tag', $item_id);
+        updateUserTags($tags);
+    }
+
     if ($query->have_posts()) {
         $query->the_post();
         $post_id = get_the_ID();
@@ -263,7 +268,7 @@ function create_artist($data): array
     $is_image_uploaded = false;
 
     $meta_input = [
-        'tag' => $data['tags'] ?? []
+        'tag' => $data['tags'] ? explode(',', $data['tags']) : []
     ];
 
     if (isset($_FILES['artist_image']) && $_FILES['artist_image']['size'] > 0) {

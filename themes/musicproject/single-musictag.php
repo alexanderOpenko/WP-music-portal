@@ -49,8 +49,8 @@ while (have_posts()) :
   }
   ?>
 
-  <div class="flex">
-    <div class="w-full max-w-2/4">
+  <div class="flex lg:flex-row flex-col mb-4 border-0 border-b-2 border-solid border-slate-300 pb-6">
+    <div class="w-full lg:max-w-2/4 max-w-full">
       <?php get_template_part('template-parts/edit-description', null, [
         'post_type' => 'musictag',
         'post_id' => $tag_id,

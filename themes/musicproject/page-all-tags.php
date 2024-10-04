@@ -15,9 +15,9 @@ $all_tags = new WP_Query([
     <?php get_template_part('template-parts/tab-items', null, ['tabs' => $tabs]); ?>
 
     <div>
-        <p>
+        <h2>
             All tags
-        </p>
+        </h2>
 
         <?php get_template_part('template-parts/tags-grid', null, ['tags' => $all_tags]) ?>
     </div>

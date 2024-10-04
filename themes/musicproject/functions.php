@@ -29,12 +29,17 @@ require_once(ABSPATH . 'wp-admin/includes/file.php');
 require_once(ABSPATH . 'wp-admin/includes/media.php');
 function music_files()
 {
-  wp_enqueue_style('main-music-style', get_theme_file_uri('/build/index.css'));
+  wp_enqueue_style('main-music-style', get_theme_file_uri('/build/index.css'), [], null);
   wp_enqueue_script('main-music-script', get_theme_file_uri('/src/index.js'), ['jquery'], false, ['in_footer' => true]);
   wp_enqueue_script('yt-iframe', 'https://www.youtube.com/iframe_api', [], false, ['in_footer' => true]);
   wp_enqueue_style('font-awesome', '//maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css');
 
+  wp_enqueue_style('font-name', 'https://fonts.googleapis.com/css?family=Open+Sans|Roboto+Slab');
+
+  wp_enqueue_style('google-fonts', 'https://fonts.googleapis.com/css2?family=Noto+Sans+Display:ital,wght@0,100..900;1,100..900&display=swap');
+
   wp_localize_script('main-music-script', 'musicData', [
+    'logged_user_id' => get_current_user_id(),
     'root_url' => get_site_url(),
     'nonce' => wp_create_nonce('wp_rest'),
     'theme_url' => get_template_directory_uri()
@@ -159,3 +164,21 @@ function auto_redirect_after_logout(){
 }
 
 add_action('wp_logout','auto_redirect_after_logout');
+
+add_action( 'phpmailer_init', 'smtp_phpmailer_init' );
+
+function smtp_phpmailer_init( $phpmailer ){
+	$phpmailer->IsSMTP();
+
+	$phpmailer->CharSet    = 'UTF-8';
+
+	$phpmailer->Host       = 'sandbox.smtp.mailtrap.io';
+	$phpmailer->Username   = '26b52b7221551c';
+	$phpmailer->Password   = '17c8fc736da34a';
+	$phpmailer->SMTPAuth   = true;
+
+	$phpmailer->Port       = 2525;
+
+	$phpmailer->isHTML( true );
+}
+

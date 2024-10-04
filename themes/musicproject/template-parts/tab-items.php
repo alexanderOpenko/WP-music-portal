@@ -1,7 +1,7 @@
 <?php function active_tab_classes($tab_name)
 {
     global $wp;
-    $tab_item_classes = "tab flex flex-col py-3 px-5 mr-4 text-white";
+    $tab_item_classes = "tab flex flex-col py-3 px-5 sm:mr-4 mb-2 sm:mb-0 text-white";
     if (explode('/', $wp->request)[0] === $tab_name) {
         $tab_item_classes .= ' active pointer-events-none';
     }
@@ -10,7 +10,7 @@
 ?>
 
 <div class="mb-8 uppercase">
-    <div class="flex border-b-2 border-gray-300">
+    <div class="flex sm:flex-row flex-col border-b-2 border-gray-300">
         <?php if (isset($args['tabs']) && is_array($args['tabs'])) : ?>
             <?php foreach ($args['tabs'] as $tab) :
                 $title = isset($tab['title']) ? $tab['title'] : '';

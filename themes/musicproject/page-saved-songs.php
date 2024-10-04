@@ -9,25 +9,25 @@ $tabs = SONGS_TABS_LINKS;
 ?>
 
 <div class="content-container">
-    <?php get_template_part('template-parts/tab-items', null, ['tabs' => $tabs]); 
-    if (!is_user_logged_in()) {
-        echo '<div> Only logged in users can save songs </div>';
-        wp_footer();
-        return;
-    }
-    ?>
+    <?php get_template_part('template-parts/tab-items', null, ['tabs' => $tabs]);
     
-    <?php if (!is_user_logged_in()) : ?>
-        <div>
+    if (!is_user_logged_in()) : ?>
+        <div class="bg-blue-100 text-blue-900 font-bold px-[20px] py-[10px] border border-blue-200 rounded-lg shadow-md mb-5 text-center">
             Only logged in users can save songs
         </div>
-    <?php endif ?>
+    <?php get_footer();
+        return;
+    endif
+    ?>
 
     <?php if (is_user_logged_in() && !$saved_songs->found_posts) : ?>
-        <div>
-            discover songs from search and save them
+        <div class="bg-blue-100 text-blue-900 font-bold px-[20px] py-[10px] border border-blue-200 rounded-lg shadow-md mb-5 text-center">
+            Discover songs through search and save them
         </div>
-    <?php endif ?>
+        <?php get_footer();
+        return;
+    endif
+    ?>
 
     <?php if ($saved_songs->found_posts) : ?>
         <div>

@@ -4,12 +4,11 @@ $post_id = 0;
 
 while (have_posts()) {
   the_post();
-  $post_id = get_the_id();
-  $tag_ids = get_post_field('tag', '', false);
+  $post_id = get_the_ID();
+  $tag_ids = get_post_field('tag', $post_id, false);
   $artists = recomended_post_type(6, 'artist', $tag_ids);
-  $image_id = get_post_field('artist_image', get_field('artist')[0]);
+  $image_id = get_field('artist_image', get_field('artist')[0]);
   $image_url = get_post_image_custom($image_id, 'full');
-
   $my_saved_songs = my_saved_items('songs', 'song', 1, -1)['my_items_ids'];
   $is_saved_song = false;
 
@@ -28,7 +27,12 @@ while (have_posts()) {
     $save_icon_args['btn_class'] = 'saved-song';
   }
 
-  get_template_part('template-parts/banner', null, ['image_url' => $image_url, 'title' => 'play song', 'listens' => get_field('play_count'), 'save_icon_args' => $save_icon_args]);
+  get_template_part('template-parts/banner', null, [
+    'image_url' => $image_url,
+    'title' => 'play song',
+    'listens' => get_field('play_count'),
+    'save_icon_args' => $save_icon_args
+  ]);
   wp_reset_postdata();
 }
 ?>
@@ -42,14 +46,17 @@ while (have_posts()) {
   ]) ?>
 
   <div class="accordion">
-    <div class="flex justify-between items-center mb-4">
-      <?php get_template_part('template-parts/single-accordion-button', null, ['open_name' => 'Edit tags', 'close_name' => 'Collapse tag edditing', 'is_open' => false]) ?>
-    </div>
+    <?php if (get_the_author_meta('ID') === get_current_user_id()) : ?>
+
+      <div class="flex justify-between items-center mb-4">
+        <?php get_template_part('template-parts/single-accordion-button', null, ['open_name' => 'Edit tags', 'close_name' => 'Collapse tag edditing', 'is_open' => false]) ?>
+      </div>
+    <?php endif ?>
 
     <div class="accordion-content invisible">
       <form class="update-song-tag">
         <input type="hidden" value="<?php echo $post_id ?>" name="post_id" />
-       
+
         <div class="flex items-start w-full max-w-[550px]">
           <?php get_template_part('template-parts/tag-field', null, ['tag_ids' => $tag_ids]) ?>
           <button class="mb-2 update-tag-button" type="submit">
@@ -65,12 +72,10 @@ while (have_posts()) {
   get_template_part('template-parts/song-item', null, ['save_icon_args' => $save_icon_args]);
   ?>
 
-  <?php if ($artists->have_posts()) : ?>
-    <?php get_template_part('template-parts/artists-grid', null, [
-      'artists' => $artists,
-      'title' => 'Similar artists'
-    ]) ?>
-  <?php endif ?>
+  <?php get_template_part('template-parts/similar-artists', null, [
+    'artists' => $artists,
+    'current_artist' => get_field('artist', $post_id)[0]
+  ]) ?>
 </div>
 
 <?php get_footer(); ?>

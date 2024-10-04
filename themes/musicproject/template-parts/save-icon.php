@@ -4,7 +4,7 @@
     <input name="type" type="hidden" value="<?php echo $args['type'] ?>"/>
     
     <button
-        class="save-icon-btn !mt-0 ml-4 <?php echo isset($args['btn_class']) ? $args['btn_class'] : ''; ?>"
+        class="save-icon-btn !mt-0 sm:ml-4 ml-2 <?php echo isset($args['btn_class']) ? $args['btn_class'] : ''; ?>"
         type="submit"
     >
     </button>
